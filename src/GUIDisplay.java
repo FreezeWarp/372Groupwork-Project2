@@ -1,4 +1,3 @@
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -123,8 +122,7 @@ public class GUIDisplay extends Display implements ActionListener {
 		} else if (event.getSource().equals(frame.bFridgeDoorOpener)) {
 			FridgeContext.instance().processEvent(
 					FridgeContext.Events.DOOR_OPENED_EVENT);
-		}
-		else if (event.getSource().equals(frame.bFreezerDoorCloser)) {
+		} else if (event.getSource().equals(frame.bFreezerDoorCloser)) {
 			FreezerContext.instance().processEvent(
 					FreezerContext.Events.DOOR_CLOSED_EVENT);
 		} else if (event.getSource().equals(frame.bFreezerDoorOpener)) {
@@ -163,6 +161,38 @@ public class GUIDisplay extends Display implements ActionListener {
 	@Override
 	public void turnFreezerLightOff() {
 		frame.lFreezerLightStatus.setText("Freezer light: Off");
+	}
+	
+	/**
+	 * Indicate that the cooling is on
+	 */
+	@Override
+	public void turnFridgeCoolingOn() {
+		frame.lFridgeCoolingStatus.setText("Fridge cooling: Active");
+	}
+
+	/**
+	 * Indicate that the cooling is off
+	 */
+	@Override
+	public void turnFridgeCoolingOff() {
+		frame.lFridgeCoolingStatus.setText("Fridge cooling: Idle");
+	}
+	
+	/**
+	 * Indicate that the cooling is on
+	 */
+	@Override
+	public void turnFreezerCoolingOn() {
+		frame.lFreezerCoolingStatus.setText("Freezer cooling: Active");
+	}
+
+	/**
+	 * Indicate that the cooling is off
+	 */
+	@Override
+	public void turnFreezerCoolingOff() {
+		frame.lFreezerCoolingStatus.setText("Freezer cooling: Idle");
 	}
 
 	/**

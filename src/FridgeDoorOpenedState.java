@@ -40,15 +40,25 @@ public class FridgeDoorOpenedState extends FridgeState {
 	public void processTimerTick() {
 		lossTime++;
 		coolTime++;
+		boolean coolingActive=false;
+		
+		//Cooling Status
+		if (context.getFridgeTemp()>context.getDesiredFridgeTemp()+2) { //TODO not use hard coded value
+			coolingActive=true;
+			display.turnFridgeCoolingOn();
+		} else {
+			coolingActive=false;
+			display.turnFridgeCoolingOff();
+		}
+		
 		//Cooling
 		if (coolTime>=context.getFridgeCoolRate()) {
-			if (context.getFridgeTemp()<RoomContext.getRoomTemp()) {
-				if (context.getFridgeTemp()>context.getDesiredFridgeTemp()+2) { //TODO not use hard coded value
-					FridgeContext.setFridgeTemp(context.getFridgeTemp() - 1);
-					coolTime=0;
-				}
+			if (coolingActive) {
+				FridgeContext.setFridgeTemp(context.getFridgeTemp() - 1);
+				coolTime=0;
 			}
 		}
+		
 		//Loss
 		if (lossTime>=context.getFridgeLossRateOpen()) {
 			FridgeContext.setFridgeTemp(context.getFridgeTemp() + 1);

@@ -39,15 +39,25 @@ public class FreezerDoorClosedState extends FreezerState {
 	public void processTimerTick() {
 		lossTime++;
 		coolTime++;
+		boolean coolingActive=false;
+		
+		//Cooling Status
+		if (context.getFreezerTemp()>context.getDesiredFreezerTemp()+1) { //TODO not use hard coded value
+			coolingActive=true;
+			display.turnFreezerCoolingOn();
+		} else {
+			coolingActive=false;
+			display.turnFreezerCoolingOff();
+		}
+		
 		//Cooling
 		if (coolTime>=context.getFreezerCoolRate()) {
-			if (context.getFreezerTemp()<RoomContext.getRoomTemp()) {
-				if (context.getFreezerTemp()>context.getDesiredFreezerTemp()+2) { //TODO not use hard coded value
-					FreezerContext.setFreezerTemp(context.getFreezerTemp() - 1);
-					coolTime=0;
-				}
+			if (coolingActive) {
+				FreezerContext.setFreezerTemp(context.getFreezerTemp() - 1);
+				coolTime=0;
 			}
 		}
+		
 		//Loss
 		if (lossTime>=context.getFreezerLossRateClose()) {
 			FreezerContext.setFreezerTemp(context.getFreezerTemp() + 1);

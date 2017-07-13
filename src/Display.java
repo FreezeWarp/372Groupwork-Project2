@@ -60,4 +60,24 @@ public abstract class Display extends Observable {
 	 * Indicate that the light is off
 	 */
 	public abstract void turnFreezerLightOff();
+	
+	/**
+	 * Indicate that the cooling is on
+	 */
+	public abstract void turnFridgeCoolingOn();
+
+	/**
+	 * Indicate that the cooling is off
+	 */
+	public abstract void turnFridgeCoolingOff();
+	/**
+	 * Indicate that the cooling is on
+	 */
+	
+	public abstract void turnFreezerCoolingOn();
+
+	/**
+	 * Indicate that the cooling is off
+	 */
+	public abstract void turnFreezerCoolingOff();
 }
