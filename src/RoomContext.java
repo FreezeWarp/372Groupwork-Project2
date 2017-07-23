@@ -13,7 +13,7 @@ public class RoomContext {
 	/**
 	 * Sets the temperature 
 	 * 
-	 * @param temperature
+	 * @param temp
 	 *            temp of the room
 	 */
 	public static void setRoomTemp(int temp) {

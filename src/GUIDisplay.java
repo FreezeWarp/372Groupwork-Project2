@@ -1,11 +1,7 @@
-import java.awt.GridLayout;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
 
 
 public class GUIDisplay extends Display implements ActionListener {
@@ -198,7 +194,7 @@ public class GUIDisplay extends Display implements ActionListener {
 	/**
 	 * display the fridge temperature
 	 * 
-	 * @param the current temp
+	 * @param value the current temp
 	 */
 	@Override
 	public void displayFridgeTemp(int value) {
@@ -208,7 +204,7 @@ public class GUIDisplay extends Display implements ActionListener {
 	/**
 	 * display the freezer temperature
 	 * 
-	 * @param the current temp
+	 * @param value the current temp
 	 */
 	@Override
 	public void displayFreezerTemp(int value) {

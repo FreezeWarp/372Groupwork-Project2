@@ -42,16 +42,17 @@ public class FridgeDoorClosedState extends FridgeState {
 		boolean coolingActive=false;
 		
 		//Cooling Status
-		if (context.getFridgeTemp()>context.getDesiredFridgeTemp()+2) { //TODO not use hard coded value
+		if (context.getFridgeTemp() > context.getDesiredFridgeTemp() + 2) { //TODO not use hard coded value
 			coolingActive=true;
 			display.turnFridgeCoolingOn();
-		} else {
+		}
+		else {
 			coolingActive=false;
 			display.turnFridgeCoolingOff();
 		}
 		
 		//Cooling
-		if (coolTime>=context.getFridgeCoolRate()) {
+		if (coolTime >= context.getFridgeCoolRate()) {
 			if (coolingActive) {
 				FridgeContext.setFridgeTemp(context.getFridgeTemp() - 1);
 				coolTime=0;
@@ -59,7 +60,7 @@ public class FridgeDoorClosedState extends FridgeState {
 		}
 		
 		//Loss
-		if (lossTime>=context.getFridgeLossRateClose()) {
+		if (lossTime >= context.getFridgeLossRateClose()) {
 			FridgeContext.setFridgeTemp(context.getFridgeTemp() + 1);
 			lossTime=0;
 		}

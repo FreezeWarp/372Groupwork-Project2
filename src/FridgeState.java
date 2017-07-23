@@ -3,7 +3,7 @@
  * 
  *
  */
-public abstract class FridgeState {
+public abstract class FridgeState extends CoolerState {
 	protected static FridgeContext context;
 	protected static Display display;
 
@@ -14,17 +14,4 @@ public abstract class FridgeState {
 		context = FridgeContext.instance();
 		display = context.getDisplay();
 	}
-
-	/**
-	 * Initializes the state
-	 */
-	public abstract void run();
-
-	/**
-	 * Handles an event
-	 * 
-	 * @param event
-	 *            event to be processed
-	 */
-	public abstract void handle(Object event);
 }
