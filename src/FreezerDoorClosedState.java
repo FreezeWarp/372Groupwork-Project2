@@ -7,7 +7,7 @@ public class FreezerDoorClosedState extends FreezerState {
 	}
 
 	/**
-	 * returns the instance
+	 * Returns the instance
 	 * 
 	 * @return this object
 	 */
@@ -29,7 +29,7 @@ public class FreezerDoorClosedState extends FreezerState {
 	}
 
 	/**
-	 * handle door open event
+	 * Handle door open event
 	 * 
 	 */
 	public void processDoorOpen() {
@@ -67,7 +67,7 @@ public class FreezerDoorClosedState extends FreezerState {
 	} 
 
 	/**
-	 * handle cook request
+	 * Handle cook request
 	 * 
 	 */
 	public void processCookRequest() {
@@ -75,7 +75,7 @@ public class FreezerDoorClosedState extends FreezerState {
 	}
 
 	/**
-	 * initialize the state
+	 * Initialize the state
 	 * 
 	 */
 	@Override

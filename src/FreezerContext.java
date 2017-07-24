@@ -43,7 +43,7 @@ public class FreezerContext implements Observer {
 	}
 
 	/**
-	 * lets door closed state be the starting state adds the object as an
+	 * Lets door closed state be the starting state adds the object as an
 	 * observable for clock
 	 */
 	public void initialize() {
@@ -65,7 +65,7 @@ public class FreezerContext implements Observer {
 	}
 
 	/**
-	 * handle one of the several other events such as door close
+	 * Handle one of the several other events such as door close
 	 * 
 	 * @param arg
 	 *            the event from the GUI

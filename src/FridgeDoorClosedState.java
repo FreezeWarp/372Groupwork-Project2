@@ -7,7 +7,7 @@ public class FridgeDoorClosedState extends FridgeState {
 	}
 
 	/**
-	 * returns the instance
+	 * Returns the instance
 	 * 
 	 * @return this object
 	 */
@@ -29,7 +29,7 @@ public class FridgeDoorClosedState extends FridgeState {
 	}
 
 	/**
-	 * handle door open event
+	 * Handle door open event
 	 * 
 	 */
 	public void processDoorOpen() {
@@ -67,7 +67,7 @@ public class FridgeDoorClosedState extends FridgeState {
 	} 
 
 	/**
-	 * initialize the state
+	 * Initialize the state
 	 * 
 	 */
 	@Override

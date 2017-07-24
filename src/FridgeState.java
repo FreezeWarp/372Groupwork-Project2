@@ -8,7 +8,7 @@ public abstract class FridgeState {
 	protected static Display display;
 
 	/**
-	 * Initialzies the context and display
+	 * Initializes the context and display
 	 */
 	protected FridgeState() {
 		context = FridgeContext.instance();
