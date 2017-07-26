@@ -19,22 +19,6 @@ public class CoolerDoorClosedState extends CoolerState {
     }
 
     /**
-     * handle door open event
-     *
-     */
-    public void processDoorOpen() {
-        coolerContext.changeCurrentState(coolerContext.getDoorOpenedState());
-    }
-
-    /**
-     * handle cook request
-     *
-     */
-    public void processCookRequest() {
-        //context.changeCurrentState(CookingState.instance());
-    }
-
-    /**
      * initialize the state
      *
      */

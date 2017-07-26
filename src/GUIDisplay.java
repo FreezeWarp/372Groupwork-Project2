@@ -285,7 +285,7 @@ public class GUIDisplay extends Display implements ActionListener {
                              "FridgeCompressorStartDiff", "FreezerCompressorStartDiff", "FridgeCoolRate", "FreezerCoolRate"},
                 new Integer[]{37, 41, -9, 0, 50, 75,
                               30, 2, 10, 1,
-                              2, 1, 20, 30}
+                              2, 1, 5, 4}
         );
 
 	    if (args.length > 0) {
@@ -313,9 +313,19 @@ public class GUIDisplay extends Display implements ActionListener {
             }
         }
 		display = new GUIDisplay();
-		roomContext = new RoomContext(config.get("RoomLow"));
-		fridge = new CoolerContext(display, roomContext, config.get("FridgeHigh"), config.get("FridgeLow"), config.get("FridgeCoolRate"), config.get("FridgeRateLossDoorOpen"), config.get("FridgeRateLossDoorClosed"));
-		freezer = new CoolerContext(display, roomContext, config.get("FreezerHigh"), config.get("FreezerLow"), config.get("FreezerCoolRate"), config.get("FreezerRateLossDoorOpen"), config.get("FreezerRateLossDoorClosed"));
+		roomContext = new RoomContext((config.get("RoomHigh") + config.get("RoomLow")) / 2);
+		fridge = new CoolerContext(
+		        display, // Associate our display.
+                roomContext, // Associate our room context.
+                roomContext.getRoomTemp(), // Set the fridge's current temperature to the current room temperature (which is probably right when you're first turning it on)
+                (config.get("FridgeHigh") + config.get("FridgeLow")) / 2, // Set the fridge's default target temperature to the average of it's maximum and minimum (which seems reasonable)
+                config.get("FridgeCompressorStartDiff"), // Set the compressor's diff for activating.
+                config.get("FridgeCoolRate"), // Set the cooling rate.
+                config.get("FridgeRateLossDoorOpen"), // Set the loss rate, door open.
+                config.get("FridgeRateLossDoorClosed") // Set the loss rate, door closed.
+        );
+		freezer = new CoolerContext(display, roomContext, roomContext.getRoomTemp(), (config.get("FreezerH" +
+                "igh") + config.get("FreezerLow")) / 2, config.get("FreezerCompressorStartDiff"), config.get("FreezerCoolRate"), config.get("FreezerRateLossDoorOpen"), config.get("FreezerRateLossDoorClosed"));
 
 		display.initialize();
 	}

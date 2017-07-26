@@ -2,11 +2,6 @@
  * Created by joseph on 23/07/17.
  */
 public class CoolerDoorOpenedState extends CoolerState {
-    private CoolerContext coolerContext;
-
-    private int coolTime = 0;
-    private int lossTime = 0;
-
     public CoolerDoorOpenedState(CoolerContext coolerContext) {
         this.coolerContext = coolerContext;
     }
@@ -24,18 +19,9 @@ public class CoolerDoorOpenedState extends CoolerState {
     }
 
     /**
-     * handle door open event
-     *
-     */
-    public void processDoorClose() {
-        coolerContext.changeCurrentState(coolerContext.getDoorClosedState());
-    }
-
-    /**
      * Initialize the state
      */
     @Override
-    public void run() {
-        coolerContext.getDisplay().turnLightOn(coolerContext);
+    public void run() {coolerContext.getDisplay().turnLightOn(coolerContext);
     }
 }

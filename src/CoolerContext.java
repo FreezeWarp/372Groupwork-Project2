@@ -17,7 +17,10 @@ public class CoolerContext implements Observer {
     private CoolerDoorOpenedState doorOpenedState;
 
     private int coolerTemp;
+
+    private int compressorStartDiff;
     private int desiredCoolerTemp;
+
     private int coolerLossRateOpen;
     private int coolerLossRateClose;
     private int coolerCoolRate;
@@ -34,11 +37,12 @@ public class CoolerContext implements Observer {
         Timer.instance().addObserver(this);
     }
 
-    public CoolerContext(Display display, RoomContext roomContext, int initialTemp, int targetTemp, int coolRate, int lossRateOpen, int lossRateClosed) {
+    public CoolerContext(Display display, RoomContext roomContext, int initialTemp, int targetTemp, int compressorStartDiff, int coolRate, int lossRateOpen, int lossRateClosed) {
         this(display, roomContext);
 
         this.setCoolerTemp(initialTemp);
         this.setDesiredCoolerTemp(targetTemp);
+        this.setCompressorStartDiff(compressorStartDiff);
         this.setCoolerCoolRate(coolRate);
         this.setCoolerLossRateOpen(lossRateOpen);
         this.setCoolerLossRateClose(lossRateClosed);
@@ -135,6 +139,9 @@ public class CoolerContext implements Observer {
     public void setCoolerCoolRate(int rate) {
         coolerCoolRate = rate;
     }
+
+    public int getCompressorStartDiff() { return compressorStartDiff; }
+    public void setCompressorStartDiff(int compressorStartDiff) { this.compressorStartDiff = compressorStartDiff; }
 
     public CoolerDoorOpenedState getDoorOpenedState() {
         return doorOpenedState;
