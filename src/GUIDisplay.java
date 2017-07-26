@@ -77,7 +77,7 @@ public class GUIDisplay extends Application implements Display {
         lFreezerLightStatus = new Label("Freezer light: Off");
         lFridgeTempStatus = new Label("Fridge temp: ");
         lFreezerTempStatus = new Label("Freezer temp: ");
-        lRoomTemp = new Label("Room temp: ");
+        lRoomTemp = new Label();
         lFridgeCoolingStatus = new Label("Fridge cooling: ");
         lFreezerCoolingStatus = new Label("Freezer cooling: ");
         lPlaceHolder = new Label();
@@ -429,6 +429,7 @@ public class GUIDisplay extends Application implements Display {
 	public static void startSimulation() {
         display = new GUIDisplay();
         roomContext = new RoomContext((config.get("RoomHigh") + config.get("RoomLow")) / 2);
+
         fridge = new CoolerContext(
                 display, // Associate our display.
                 roomContext, // Associate our room context.
@@ -439,8 +440,11 @@ public class GUIDisplay extends Application implements Display {
                 config.get("FridgeRateLossDoorOpen"), // Set the loss rate, door open.
                 config.get("FridgeRateLossDoorClosed") // Set the loss rate, door closed.
         );
+
         freezer = new CoolerContext(display, roomContext, roomContext.getRoomTemp(), (config.get("FreezerH" +
                 "igh") + config.get("FreezerLow")) / 2, config.get("FreezerCompressorStartDiff"), config.get("FreezerCoolRate"), config.get("FreezerRateLossDoorOpen"), config.get("FreezerRateLossDoorClosed"));
+
+        lRoomTemp.textProperty().bind(Bindings.concat("Room temperature: ", roomContext.roomTempProperty()));
     }
 
 

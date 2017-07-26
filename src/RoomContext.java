@@ -1,8 +1,11 @@
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+
 public class RoomContext {
-	private int roomTemp;
+	private final IntegerProperty roomTemp;
 
 	public RoomContext(int roomTemp) {
-		this.roomTemp = roomTemp;
+		this.roomTemp = new SimpleIntegerProperty(roomTemp);
 	}
 
 	/**
@@ -11,7 +14,7 @@ public class RoomContext {
 	 *  @return freezerTemp
 	 */
 	public int getRoomTemp() {
-		return roomTemp;
+		return roomTemp.get();
 	}
 	
 	/**
@@ -21,6 +24,8 @@ public class RoomContext {
 	 *            temp of the room
 	 */
 	public void setRoomTemp(int temp) {
-		roomTemp = temp;
+		roomTemp.set(temp);
 	}
+
+	public IntegerProperty roomTempProperty() { return roomTemp; }
 }
