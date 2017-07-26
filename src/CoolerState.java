@@ -27,16 +27,22 @@ public abstract class CoolerState {
      */
     public abstract void run();
 
+
+    public abstract int getCoolerLossRate();
+
+
     /**
-     * Handles an event
-     *
-     * @param event
-     *            event to be processed
+     * Handle events
      */
-    public abstract void handle(Object event);
+    public void handle(Object event) {
+        if (event.equals(Timer.Events.CLOCK_TICKED_EVENT)) {
+            processTimerTick();
+        }
+    }
 
 
     public void processTimerTick() {
+        System.out.println(getClass());
         lossTime++;
 
 
@@ -52,17 +58,17 @@ public abstract class CoolerState {
         // Process Temperature Change from Cooling
         if (isCooling()) {
             coolTime++;
-            if (coolTime >= coolerContext.getCoolerCoolRate()) {
+            while (coolTime >= coolerContext.getCoolerCoolRate()) {
                 coolerContext.setCoolerTemp(coolerContext.getCoolerTemp() - 1);
-                coolTime = 0;
+                coolTime -= coolerContext.getCoolerCoolRate();
             }
         }
 
 
         // Process Temperature Change from Natural Loss
-        if (lossTime >= coolerContext.getCoolerLossRateClose()) {
+        while (lossTime >= getCoolerLossRate()) {
             coolerContext.setCoolerTemp(coolerContext.getCoolerTemp() + 1);
-            lossTime = 0;
+            lossTime -= getCoolerLossRate();
         }
 
 

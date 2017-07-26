@@ -6,15 +6,15 @@ public class CoolerDoorClosedState extends CoolerState {
         this.coolerContext = coolerContext;
     }
 
-    /**
-     * Handle cook request and door open events
-     *
-     */
+    public int getCoolerLossRate() {
+        return coolerContext.getCoolerLossRateClose();
+    }
+
     public void handle(Object event) {
+        super.handle(event);
+
         if (event.equals(CoolerContext.Events.DOOR_OPENED_EVENT)) {
             processDoorOpen();
-        } else if (event.equals(Timer.Events.CLOCK_TICKED_EVENT)) {
-            processTimerTick();
         }
     }
 
@@ -24,6 +24,5 @@ public class CoolerDoorClosedState extends CoolerState {
      */
     public void run() {
         coolerContext.getDisplay().turnLightOff(coolerContext);
-        //context.setTimeRemaining(0);
     }
 }

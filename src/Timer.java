@@ -39,7 +39,7 @@ public class Timer extends Observable implements Runnable {
 	public void run() {
 		try {
 			while (true) {
-				Thread.sleep(1000);
+				Thread.sleep(50);
 				setChanged();
 				notifyObservers(Events.CLOCK_TICKED_EVENT);
 			}
