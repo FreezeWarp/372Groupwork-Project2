@@ -111,10 +111,10 @@ public class CoolerContext implements Observer {
         coolerTemp = temp;
     }
 
+
     public int getDesiredCoolerTemp() {
         return desiredCoolerTemp;
     }
-
     public void setDesiredCoolerTemp(int temp) {
         desiredCoolerTemp = temp;
     }
@@ -142,6 +142,8 @@ public class CoolerContext implements Observer {
 
     public int getCompressorStartDiff() { return compressorStartDiff; }
     public void setCompressorStartDiff(int compressorStartDiff) { this.compressorStartDiff = compressorStartDiff; }
+
+    public RoomContext getRoomContext() { return roomContext; }
 
     public CoolerDoorOpenedState getDoorOpenedState() {
         return doorOpenedState;

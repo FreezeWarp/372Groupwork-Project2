@@ -42,8 +42,11 @@ public abstract class CoolerState {
 
 
     public void processTimerTick() {
-        System.out.println(getClass());
-        lossTime++;
+        // Increment the loss time from normal running, unless the fridge is at the room temperature.
+        // (Notably, this is still imperfect: the fridge would approach room temperature asymptotically, not linearly.)
+        if (coolerContext.getCoolerTemp() < coolerContext.getRoomContext().getRoomTemp()) {
+            lossTime++;
+        }
 
 
         // Start/Stop Cooling When Needed
