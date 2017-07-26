@@ -5,49 +5,45 @@ import java.util.Observer;
  * Created by joseph on 23/07/17.
  */
 public class CoolerContext implements Observer {
-    public static enum Events {
+    public enum Events {
         DOOR_CLOSED_EVENT, DOOR_OPENED_EVENT
     };
 
-    private static Display coolerDisplay;
-    private static int coolerTemp;
-    private static int desiredCoolerTemp;
-    private static int coolerLossRateOpen;
-    private static int coolerLossRateClose;
-    private static int coolerCoolRate;
+    private Display coolerDisplay;
+    private RoomContext roomContext;
+
     private CoolerState currentState;
-    private static CoolerContext instance;
-    static {
-        instance = new CoolerContext();
-        coolerDisplay = Display.instance();
+    private CoolerDoorClosedState doorClosedState;
+    private CoolerDoorOpenedState doorOpenedState;
+
+    private int coolerTemp;
+    private int desiredCoolerTemp;
+    private int coolerLossRateOpen;
+    private int coolerLossRateClose;
+    private int coolerCoolRate;
+
+
+    public CoolerContext(Display display, RoomContext roomContext) {
+        this.coolerDisplay = display;
+        this.roomContext = roomContext;
+
+        this.doorClosedState = new CoolerDoorClosedState(this);
+        this.doorOpenedState = new CoolerDoorOpenedState(this);
+
+        this.changeCurrentState(doorClosedState);
+        Timer.instance().addObserver(this);
     }
 
-    /**
-     * Make it a singleton
-     */
-    private CoolerContext() {
+    public CoolerContext(Display display, RoomContext roomContext, int initialTemp, int targetTemp, int coolRate, int lossRateOpen, int lossRateClosed) {
+        this(display, roomContext);
+
+        this.setCoolerTemp(initialTemp);
+        this.setDesiredCoolerTemp(targetTemp);
+        this.setCoolerCoolRate(coolRate);
+        this.setCoolerLossRateOpen(lossRateOpen);
+        this.setCoolerLossRateClose(lossRateClosed);
     }
 
-    /**
-     * Return the instance
-     *
-     * @return the object
-     */
-    public static CoolerContext instance() {
-        if (instance == null) {
-            instance = new CoolerContext();
-        }
-        return instance;
-    }
-
-    /**
-     * lets door closed state be the starting state adds the object as an
-     * observable for clock
-     */
-    public void initialize() {
-        instance.changeCurrentState(CoolerDoorClosedState.instance());
-        Timer.instance().addObserver(instance);
-    }
 
     /**
      * For observer
@@ -107,7 +103,7 @@ public class CoolerContext implements Observer {
      * @param temp
      *            temp of the cooler
      */
-    public static void setCoolerTemp(int temp) {
+    public void setCoolerTemp(int temp) {
         coolerTemp = temp;
     }
 
@@ -115,28 +111,36 @@ public class CoolerContext implements Observer {
         return desiredCoolerTemp;
     }
 
-    public static void setDesiredCoolerTemp(int temp) {
+    public void setDesiredCoolerTemp(int temp) {
         desiredCoolerTemp = temp;
     }
 
     public int getCoolerLossRateOpen() {
         return coolerLossRateOpen;
     }
-    public static void setCoolerLossRateOpen(int rate) {
+    public void setCoolerLossRateOpen(int rate) {
         coolerLossRateOpen = rate;
     }
 
     public int getCoolerLossRateClose() {
         return coolerLossRateClose;
     }
-    public static void setCoolerLossRateClose(int rate) {
+    public void setCoolerLossRateClose(int rate) {
         coolerLossRateClose = rate;
     }
 
     public int getCoolerCoolRate() {
         return coolerCoolRate;
     }
-    public static void setCoolerCoolRate(int rate) {
+    public void setCoolerCoolRate(int rate) {
         coolerCoolRate = rate;
+    }
+
+    public CoolerDoorOpenedState getDoorOpenedState() {
+        return doorOpenedState;
+    }
+
+    public CoolerDoorClosedState getDoorClosedState() {
+        return doorClosedState;
     }
 }

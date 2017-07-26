@@ -12,7 +12,6 @@ public class GUIDisplay extends Display implements ActionListener {
 	 */
 	private GUIDisplay() {
 		frame = new SimpleDisplay();
-		initialize();
 	}
 
 	/**
@@ -83,17 +82,17 @@ public class GUIDisplay extends Display implements ActionListener {
 			
 			bSetRoomTemp.addActionListener(new ActionListener() {
 	        	public void actionPerformed(ActionEvent e) {     
-	        		RoomContext.setRoomTemp(Integer.parseInt(tRoomTemp.getText()));
+	        		roomContext.setRoomTemp(Integer.parseInt(tRoomTemp.getText()));
 	             }
 	          });
 			bSetFridgeTemp.addActionListener(new ActionListener() {
 	        	public void actionPerformed(ActionEvent e) {     
-	        		FridgeContext.setDesiredFridgeTemp(Integer.parseInt(tFridgeTemp.getText()));
+	        		fridge.setDesiredCoolerTemp(Integer.parseInt(tFridgeTemp.getText()));
 	             }
 	          });
 			bSetFreezerTemp.addActionListener(new ActionListener() {
 	        	public void actionPerformed(ActionEvent e) {     
-	        		FreezerContext.setDesiredFreezerTemp(Integer.parseInt(tFreezerTemp.getText()));
+	        		freezer.setDesiredCoolerTemp(Integer.parseInt(tFreezerTemp.getText()));
 	             }
 	          });
 
@@ -113,81 +112,73 @@ public class GUIDisplay extends Display implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		if (event.getSource().equals(frame.bFridgeDoorCloser)) {
-			FridgeContext.instance().processEvent(
-					FridgeContext.Events.DOOR_CLOSED_EVENT);
+			fridge.processEvent(
+					CoolerContext.Events.DOOR_CLOSED_EVENT);
 		} else if (event.getSource().equals(frame.bFridgeDoorOpener)) {
-			FridgeContext.instance().processEvent(
-					FridgeContext.Events.DOOR_OPENED_EVENT);
+			fridge.processEvent(
+                    CoolerContext.Events.DOOR_OPENED_EVENT);
 		} else if (event.getSource().equals(frame.bFreezerDoorCloser)) {
-			FreezerContext.instance().processEvent(
-					FreezerContext.Events.DOOR_CLOSED_EVENT);
+			freezer.processEvent(
+                    CoolerContext.Events.DOOR_CLOSED_EVENT);
 		} else if (event.getSource().equals(frame.bFreezerDoorOpener)) {
-			FreezerContext.instance().processEvent(
-					FreezerContext.Events.DOOR_OPENED_EVENT);
+			freezer.processEvent(
+                    CoolerContext.Events.DOOR_OPENED_EVENT);
 		}
 	}
 
 	/**
 	 * Indicate that the light is on
 	 */
-	@Override
-	public void turnFridgeLightOn() {
+	private void turnFridgeLightOn() {
 		frame.lFridgeLightStatus.setText("Fridge light: On");
 	}
 
 	/**
 	 * Indicate that the light is off
 	 */
-	@Override
-	public void turnFridgeLightOff() {
+	private void turnFridgeLightOff() {
 		frame.lFridgeLightStatus.setText("Fridge light: Off");
 	}
 	
 	/**
 	 * Indicate that the light is on
 	 */
-	@Override
-	public void turnFreezerLightOn() {
+	private void turnFreezerLightOn() {
 		frame.lFreezerLightStatus.setText("Freezer light: On");
 	}
 
 	/**
 	 * Indicate that the light is off
 	 */
-	@Override
-	public void turnFreezerLightOff() {
+	private void turnFreezerLightOff() {
 		frame.lFreezerLightStatus.setText("Freezer light: Off");
 	}
 	
 	/**
 	 * Indicate that the cooling is on
 	 */
-	@Override
-	public void turnFridgeCoolingOn() {
+	private void turnFridgeCoolingOn() {
 		frame.lFridgeCoolingStatus.setText("Fridge cooling: Active");
 	}
 
 	/**
 	 * Indicate that the cooling is off
 	 */
-	@Override
-	public void turnFridgeCoolingOff() {
+	private void turnFridgeCoolingOff() {
 		frame.lFridgeCoolingStatus.setText("Fridge cooling: Idle");
 	}
 	
 	/**
 	 * Indicate that the cooling is on
 	 */
-	@Override
-	public void turnFreezerCoolingOn() {
+	private void turnFreezerCoolingOn() {
 		frame.lFreezerCoolingStatus.setText("Freezer cooling: Active");
 	}
 
 	/**
 	 * Indicate that the cooling is off
 	 */
-	@Override
-	public void turnFreezerCoolingOff() {
+	private void turnFreezerCoolingOff() {
 		frame.lFreezerCoolingStatus.setText("Freezer cooling: Idle");
 	}
 
@@ -196,7 +187,6 @@ public class GUIDisplay extends Display implements ActionListener {
 	 * 
 	 * @param value the current temp
 	 */
-	@Override
 	public void displayFridgeTemp(int value) {
 		frame.lFridgeTempStatus.setText("Fridge temp: " + value);
 	}
@@ -206,10 +196,77 @@ public class GUIDisplay extends Display implements ActionListener {
 	 * 
 	 * @param value the current temp
 	 */
-	@Override
 	public void displayFreezerTemp(int value) {
 		frame.lFreezerTempStatus.setText("Freezer temp: " + value);
 	}
+
+
+
+    /* Contextual handlers.
+     * NOTE: the use of "==" instead of "equals()" is correct here. We are comparing references, not values. */
+
+	public void turnLightOn(CoolerContext context) {
+	    if (context == fridge) {
+	        turnFridgeLightOn();
+        }
+        else if (context == freezer) {
+	        turnFreezerLightOn();
+        }
+        else {
+	        // TODO: error
+        }
+    }
+
+    public void turnLightOff(CoolerContext context) {
+        if (context == fridge) {
+            turnFridgeLightOff();
+        }
+        else if (context == freezer) {
+            turnFreezerLightOff();
+        }
+        else {
+            // TODO: error
+        }
+    }
+
+    public void displayTemp(CoolerContext context) {
+        if (context == fridge) {
+            displayFridgeTemp(context.getCoolerTemp());
+        }
+        else if (context == freezer) {
+            displayFreezerTemp(context.getCoolerTemp());
+        }
+        else {
+            // TODO: error
+        }
+    }
+
+    public void turnCoolingOn(CoolerContext context) {
+        if (context == fridge) {
+            turnFridgeCoolingOn();
+        }
+        else if (context == freezer) {
+            turnFreezerCoolingOn();
+        }
+        else {
+            // TODO: error
+        }
+    }
+
+    public void turnCoolingOff(CoolerContext context) {
+        if (context == fridge) {
+            turnFridgeCoolingOff();
+        }
+        else if (context == freezer) {
+            turnFreezerCoolingOff();
+        }
+        else {
+            // TODO: error
+        }
+    }
+
+
+
 
 	/**
 	 * The main method. Creates the interface
@@ -218,17 +275,16 @@ public class GUIDisplay extends Display implements ActionListener {
 	 *            not used
 	 */
 	public static void main(String[] args) {
-		Display display = new GUIDisplay();
-		RoomContext.setRoomTemp(70);
-		FridgeContext.setFridgeTemp(40);
-		FridgeContext.setDesiredFridgeTemp(35);
-		FridgeContext.setFridgeCoolRate(5);
-		FridgeContext.setFridgeLossRateOpen(2);
-		FridgeContext.setFridgeLossRateClose(10);
-		FreezerContext.setFreezerTemp(0);
-		FreezerContext.setDesiredFreezerTemp(-5);
-		FreezerContext.setFreezerCoolRate(6);
-		FreezerContext.setFreezerLossRateOpen(1);
-		FreezerContext.setFreezerLossRateClose(12);
+		display = new GUIDisplay();
+		roomContext = new RoomContext(70);
+		fridge = new CoolerContext(display, roomContext, 40, 35, 5, 2, 10);
+		freezer = new CoolerContext(display, roomContext, 0, -5, 6, 1, 12);
+
+		display.initialize();
 	}
+
+	public void initialize() {
+        this.addObserver(fridge);
+        this.addObserver(freezer);
+    }
 }

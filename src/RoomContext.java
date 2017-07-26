@@ -1,12 +1,16 @@
 public class RoomContext {
+	private int roomTemp;
 
-	private static int roomTemp;
+	public RoomContext(int roomTemp) {
+		this.roomTemp = roomTemp;
+	}
+
 	/**
 	 * Gets the temperature
 	 * 
 	 *  @return freezerTemp
 	 */
-	public static int getRoomTemp() {
+	public int getRoomTemp() {
 		return roomTemp;
 	}
 	
@@ -16,7 +20,7 @@ public class RoomContext {
 	 * @param temp
 	 *            temp of the room
 	 */
-	public static void setRoomTemp(int temp) {
+	public void setRoomTemp(int temp) {
 		roomTemp = temp;
 	}
 }
