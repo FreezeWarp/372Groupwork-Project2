@@ -2,6 +2,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 
 public class GUIDisplay extends Display implements ActionListener {
@@ -275,10 +279,43 @@ public class GUIDisplay extends Display implements ActionListener {
 	 *            not used
 	 */
 	public static void main(String[] args) {
+        ConfigurationMap<String, Integer> config = new ConfigurationMap<String, Integer>(
+                new String[]{"FridgeLow", "FridgeHigh", "FreezerLow", "FreezerHigh", "RoomLow", "RoomHigh",
+                             "FridgeRateLossDoorClosed", "FridgeRateLossDoorOpen", "FreezerRateLossDoorClosed", "FreezerRateLossDoorOpen",
+                             "FridgeCompressorStartDiff", "FreezerCompressorStartDiff", "FridgeCoolRate", "FreezerCoolRate"},
+                new Integer[]{37, 41, -9, 0, 50, 75,
+                              30, 2, 10, 1,
+                              2, 1, 20, 30}
+        );
+
+	    if (args.length > 0) {
+	        Path filePath = Paths.get(args[0]);
+
+            System.out.println("Attempting to use " + filePath.toAbsolutePath() + " as configuration file.");
+            if (!Files.exists(filePath)) {
+                System.err.println("Could not use " + filePath.toAbsolutePath() + " as configuration file. The file does not exist.");
+            }
+            else {
+                try {
+                    Files.lines(filePath).forEach((line) -> {
+                        String[] lineParts = line.split("=");
+                        try {
+                            config.put(lineParts[0].trim(), Integer.parseInt(lineParts[1].trim()));
+                        } catch (NoKeyException exception) {
+                            System.err.println("Config value is not recgonised: " + lineParts[0]);
+                        } catch (Exception exceptiopn) {
+                            System.err.println("Could not parse config value: " + lineParts[0] + "=" + lineParts[1]);
+                        }
+                    });
+                } catch (IOException exception) {
+                    System.err.println("Could not use " + filePath.toAbsolutePath() + " as configuration file. A file IO exception occured when reading it: " + exception);
+                }
+            }
+        }
 		display = new GUIDisplay();
-		roomContext = new RoomContext(70);
-		fridge = new CoolerContext(display, roomContext, 40, 35, 5, 2, 10);
-		freezer = new CoolerContext(display, roomContext, 0, -5, 6, 1, 12);
+		roomContext = new RoomContext(config.get("RoomLow"));
+		fridge = new CoolerContext(display, roomContext, config.get("FridgeHigh"), config.get("FridgeLow"), config.get("FridgeCoolRate"), config.get("FridgeRateLossDoorOpen"), config.get("FridgeRateLossDoorClosed"));
+		freezer = new CoolerContext(display, roomContext, config.get("FreezerHigh"), config.get("FreezerLow"), config.get("FreezerCoolRate"), config.get("FreezerRateLossDoorOpen"), config.get("FreezerRateLossDoorClosed"));
 
 		display.initialize();
 	}
