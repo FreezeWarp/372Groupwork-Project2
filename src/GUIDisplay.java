@@ -1,9 +1,11 @@
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -127,19 +129,49 @@ public class GUIDisplay extends Application implements Display {
 
         bSetRoomTemp.setOnAction(new EventHandler<ActionEvent> () {
             public void handle(ActionEvent e) {
-                roomContext.setRoomTemp(Integer.parseInt(tRoomTemp.getText()));
+                int value = Integer.parseInt(tRoomTemp.getText());
+
+                if (value > config.get("RoomHigh")) {
+                    alert("The room cannot be that warm. Current maximum is " + config.get("RoomHigh") + ".");
+                }
+                else if (value < config.get("RoomLow")) {
+                    alert("The room cannot be that cool. Current minimum is " + config.get("RoomLow") + ".");
+                }
+                else {
+                    roomContext.setRoomTemp(value);
+                }
             }
         });
         
         bSetFreezerTemp.setOnAction(new EventHandler<ActionEvent> () {
             public void handle(ActionEvent e) {
-                fridge.setDesiredCoolerTemp(Integer.parseInt(tFreezerTemp.getText()));
+                int value = Integer.parseInt(tFreezerTemp.getText());
+
+                if (value > config.get("FreezerHigh")) {
+                    alert("The freezer cannot be that warm. Current maximum is " + config.get("FreezerHigh") + ".");
+                }
+                else if (value < config.get("FreezerLow")) {
+                    alert("The freezer cannot be that cool. Current minimum is " + config.get("FreezerLow") + ".");
+                }
+                else {
+                    freezer.setDesiredCoolerTemp(value);
+                }
             }
         });
 
         bSetFridgeTemp.setOnAction(new EventHandler<ActionEvent> () {
             public void handle(ActionEvent e) {
-                fridge.setDesiredCoolerTemp(Integer.parseInt(tFridgeTemp.getText()));
+                int value = Integer.parseInt(tFridgeTemp.getText());
+
+                if (value > config.get("FridgeHigh")) {
+                    alert("The fridge cannot be that warm. Current maximum is " + config.get("FridgeHigh") + ".");
+                }
+                else if (value < config.get("FridgeLow")) {
+                    alert("The fridge cannot be that cool. Current minimum is " + config.get("FridgeLow") + ".");
+                }
+                else {
+                    fridge.setDesiredCoolerTemp(value);
+                }
             }
         });
 
@@ -161,13 +193,23 @@ public class GUIDisplay extends Application implements Display {
         }
     }
 
+    public void alert(String text) {
+        Label label = new Label(text);
+        label.setWrapText(true);
+
+        Alert dialog = new Alert(Alert.AlertType.ERROR);
+        dialog.setHeaderText("Error");
+        dialog.getDialogPane().setContent(label);
+        dialog.showAndWait();
+    }
+
 	/**
 	 * Indicate that the light is on
 	 */
 	private void fridgeOpened() {
         Platform.runLater(new Runnable() {
             public void run() {
-                bFreezerDoorToggle.setText("Close fridge door");
+                bFridgeDoorToggle.setText("Close fridge door");
                 lFridgeLightStatus.setText("Fridge light: On");
             }
         });
@@ -179,7 +221,7 @@ public class GUIDisplay extends Application implements Display {
 	private void fridgeClosed() {
         Platform.runLater(new Runnable() {
             public void run() {
-                bFreezerDoorToggle.setText("Open fridge door");
+                bFridgeDoorToggle.setText("Open fridge door");
                 lFridgeLightStatus.setText("Fridge light: Off");
             }
         });
