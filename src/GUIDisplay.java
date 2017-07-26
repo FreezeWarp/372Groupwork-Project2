@@ -1,189 +1,256 @@
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 
-public class GUIDisplay extends Display implements ActionListener {
-	private static SimpleDisplay frame;
+public class GUIDisplay extends Application implements Display {
+    static Display display;
+    static RoomContext roomContext;
+    static CoolerContext fridge;
+    static CoolerContext freezer;
 
-	/**
-	 * Makes it a singleton
-	 */
-	private GUIDisplay() {
-		frame = new SimpleDisplay();
-	}
 
-	/**
-	 * This class has most of the widgets
-	 *
-	 */
-	private class SimpleDisplay extends JFrame {
-		private JButton bSetRoomTemp = new JButton("Set room temp");
-		private JButton bSetFridgeTemp = new JButton("Set desired fridge temp");
-		private JButton bSetFreezerTemp = new JButton("Set desired freezer temp");
-		private JButton bFridgeDoorCloser = new JButton("Close fridge door");
-		private JButton bFridgeDoorOpener = new JButton("Open fridge door");
-		private JButton bFreezerDoorCloser = new JButton("Close freezer door");
-		private JButton bFreezerDoorOpener = new JButton("Open freezer door");
-		private JLabel lRoomTemp = new JLabel("Room Temp");
-		private JLabel lFridgeTemp = new JLabel("Desired fridge temp");
-		private JLabel lFreezerTemp = new JLabel("Desired freezer temp");
-		private JLabel lStatus = new JLabel("Status");
-		private JLabel lFridgeLightStatus = new JLabel("Fridge light: Off");
-		private JLabel lFreezerLightStatus = new JLabel("Freezer light: Off");
-		private JLabel lFridgeTempStatus = new JLabel("Fridge temp: ");
-		private JLabel lFreezerTempStatus = new JLabel("Freezer temp: ");
-		private JLabel lFridgeCoolingStatus = new JLabel("Fridge cooling: ");
-		private JLabel lFreezerCoolingStatus = new JLabel("Freezer cooling: ");
-		private JLabel lPlaceHolder = new JLabel();
-		private JLabel lPlaceHolder2 = new JLabel();
-		private JLabel lPlaceHolder3 = new JLabel();
-		private JLabel lPlaceHolder4 = new JLabel();
-		private JLabel lPlaceHolder5 = new JLabel();
-		private JLabel lPlaceHolder6 = new JLabel();
-		private JTextField tRoomTemp = new JTextField();
-		private JTextField tFridgeTemp = new JTextField();
-		private JTextField tFreezerTemp = new JTextField();
-		
-		/**
-		 * Sets up the interface
-		 */
-		private SimpleDisplay() {
-			super("Refrigerator");
-			getContentPane().setLayout(new GridLayout(9,3));
-			getContentPane().add(lRoomTemp);
-			getContentPane().add(tRoomTemp);
-			getContentPane().add(bSetRoomTemp);
-			getContentPane().add(lFridgeTemp);
-			getContentPane().add(tFridgeTemp);
-			getContentPane().add(bSetFridgeTemp);
-			getContentPane().add(lFreezerTemp);
-			getContentPane().add(tFreezerTemp);
-			getContentPane().add(bSetFreezerTemp);
-			getContentPane().add(bFridgeDoorOpener);
-			getContentPane().add(bFridgeDoorCloser);
-			getContentPane().add(lPlaceHolder);
-			getContentPane().add(bFreezerDoorOpener);
-			getContentPane().add(bFreezerDoorCloser);
-			getContentPane().add(lPlaceHolder2);
-			getContentPane().add(lStatus);
-			getContentPane().add(lPlaceHolder3);
-			getContentPane().add(lPlaceHolder4);
-			getContentPane().add(lFridgeLightStatus);
-			getContentPane().add(lFreezerLightStatus);
-			getContentPane().add(lPlaceHolder5);
-			getContentPane().add(lFridgeTempStatus);
-			getContentPane().add(lFreezerTempStatus);
-			getContentPane().add(lPlaceHolder6);
-			getContentPane().add(lFridgeCoolingStatus);
-			getContentPane().add(lFreezerCoolingStatus);
+    static ConfigurationMap<String, Integer> config = new ConfigurationMap<String, Integer>(
+            new String[]{"FridgeLow", "FridgeHigh", "FreezerLow", "FreezerHigh", "RoomLow", "RoomHigh",
+                    "FridgeRateLossDoorClosed", "FridgeRateLossDoorOpen", "FreezerRateLossDoorClosed", "FreezerRateLossDoorOpen",
+                    "FridgeCompressorStartDiff", "FreezerCompressorStartDiff", "FridgeCoolRate", "FreezerCoolRate"},
+            new Integer[]{37, 41, -9, 0, 50, 75,
+                    30, 2, 10, 1,
+                    2, 1, 5, 4}
+    );
 
-			
-			bSetRoomTemp.addActionListener(new ActionListener() {
-	        	public void actionPerformed(ActionEvent e) {     
-	        		roomContext.setRoomTemp(Integer.parseInt(tRoomTemp.getText()));
-	             }
-	          });
-			bSetFridgeTemp.addActionListener(new ActionListener() {
-	        	public void actionPerformed(ActionEvent e) {     
-	        		fridge.setDesiredCoolerTemp(Integer.parseInt(tFridgeTemp.getText()));
-	             }
-	          });
-			bSetFreezerTemp.addActionListener(new ActionListener() {
-	        	public void actionPerformed(ActionEvent e) {     
-	        		freezer.setDesiredCoolerTemp(Integer.parseInt(tFreezerTemp.getText()));
-	             }
-	          });
 
-			bFridgeDoorCloser.addActionListener(GUIDisplay.this);
-			bFridgeDoorOpener.addActionListener(GUIDisplay.this);
-			bFreezerDoorCloser.addActionListener(GUIDisplay.this);
-			bFreezerDoorOpener.addActionListener(GUIDisplay.this);
 
-			pack();
-			setVisible(true);
-		}
-	}
+    private static Button bSetRoomTemp ;
+    private static Button bSetFridgeTemp ;
+    private static Button bSetFreezerTemp ;
+    private static Button bFridgeDoorToggle ;
+    private static Button bFreezerDoorToggle ;
+    private static Label lFridgeTemp ;
+    private static Label lFreezerTemp ;
+    private static Label lStatus ;
+    private static Label lFridgeLightStatus ;
+    private static Label lFreezerLightStatus ;
+    private static Label lFridgeTempStatus ;
+    private static Label lFreezerTempStatus ;
+    private static Label lRoomTemp ;
+    private static Label lFridgeCoolingStatus ;
+    private static Label lFreezerCoolingStatus ;
+    private static Label lPlaceHolder ;
+    private static Label lPlaceHolder2 ;
+    private static Label lPlaceHolder3 ;
+    private static Label lPlaceHolder4 ;
+    private static Label lPlaceHolder5 ;
+    private static Label lPlaceHolder6 ;
+    private static TextField tRoomTemp ;
+    private static TextField tFridgeTemp ;
+    private static TextField tFreezerTemp ;
 
-	/**
-	 * Handles the clicks
-	 */
-	@Override
-	public void actionPerformed(ActionEvent event) {
-		if (event.getSource().equals(frame.bFridgeDoorCloser)) {
-			fridge.processEvent(
-					CoolerContext.Events.DOOR_CLOSED_EVENT);
-		} else if (event.getSource().equals(frame.bFridgeDoorOpener)) {
-			fridge.processEvent(
-                    CoolerContext.Events.DOOR_OPENED_EVENT);
-		} else if (event.getSource().equals(frame.bFreezerDoorCloser)) {
-			freezer.processEvent(
-                    CoolerContext.Events.DOOR_CLOSED_EVENT);
-		} else if (event.getSource().equals(frame.bFreezerDoorOpener)) {
-			freezer.processEvent(
-                    CoolerContext.Events.DOOR_OPENED_EVENT);
-		}
-	}
+    
+
+	public void start(Stage primaryStage) {
+        bSetRoomTemp = new Button("Set room temp");
+        bSetFridgeTemp = new Button("Set desired fridge temp");
+        bSetFreezerTemp = new Button("Set desired freezer temp");
+        bFridgeDoorToggle = new Button("Open fridge door");
+        bFreezerDoorToggle = new Button("Open freezer door");
+        lFridgeTemp = new Label("Desired fridge temp");
+        lFreezerTemp = new Label("Desired freezer temp");
+        lStatus = new Label("Status");
+        lFridgeLightStatus = new Label("Fridge light: Off");
+        lFreezerLightStatus = new Label("Freezer light: Off");
+        lFridgeTempStatus = new Label("Fridge temp: ");
+        lFreezerTempStatus = new Label("Freezer temp: ");
+        lRoomTemp = new Label("Room temp: ");
+        lFridgeCoolingStatus = new Label("Fridge cooling: ");
+        lFreezerCoolingStatus = new Label("Freezer cooling: ");
+        lPlaceHolder = new Label();
+        lPlaceHolder2 = new Label();
+        lPlaceHolder3 = new Label();
+        lPlaceHolder4 = new Label();
+        lPlaceHolder5 = new Label();
+        lPlaceHolder6 = new Label();
+        tRoomTemp = new TextField();
+        tFridgeTemp = new TextField();
+        tFreezerTemp = new TextField();
+        
+        
+        
+        VBox overallFrame = new VBox(5);
+
+        HBox mainFrame = new HBox(5);
+
+        VBox configFrame = new VBox(10);
+        configFrame.getChildren().add((new HBox(5, tRoomTemp, bSetRoomTemp)));
+        configFrame.getChildren().add((new HBox(5, tFridgeTemp, bSetFridgeTemp)));
+        configFrame.getChildren().add((new HBox(5, tFreezerTemp, bSetFreezerTemp)));
+
+        VBox statusFrame = new VBox(10);
+        statusFrame.getChildren().addAll(lFridgeCoolingStatus, lFridgeTempStatus, lFreezerCoolingStatus, lFreezerTempStatus, lRoomTemp);
+        statusFrame.setMinWidth(150);
+
+        mainFrame.getChildren().addAll(statusFrame, configFrame);
+
+        HBox buttonFrame = new HBox(25);
+        buttonFrame.getChildren().addAll(bFreezerDoorToggle, bFridgeDoorToggle);
+
+        overallFrame.getChildren().addAll(mainFrame, buttonFrame);
+
+        overallFrame.setAlignment(Pos.CENTER);
+        configFrame.setAlignment(Pos.CENTER);
+        mainFrame.setAlignment(Pos.CENTER);
+        buttonFrame.setAlignment(Pos.CENTER);
+
+        // add the layout to scene
+        Scene scene = new Scene(overallFrame);
+
+        // add scene to the stage
+        primaryStage.setScene(scene);
+
+        // Title and show
+        primaryStage.setTitle("Coolers Interface");
+        primaryStage.show();
+
+        bSetRoomTemp.setOnAction(new EventHandler<ActionEvent> () {
+            public void handle(ActionEvent e) {
+                roomContext.setRoomTemp(Integer.parseInt(tRoomTemp.getText()));
+            }
+        });
+        
+        bSetFreezerTemp.setOnAction(new EventHandler<ActionEvent> () {
+            public void handle(ActionEvent e) {
+                fridge.setDesiredCoolerTemp(Integer.parseInt(tFreezerTemp.getText()));
+            }
+        });
+
+        bSetFridgeTemp.setOnAction(new EventHandler<ActionEvent> () {
+            public void handle(ActionEvent e) {
+                fridge.setDesiredCoolerTemp(Integer.parseInt(tFridgeTemp.getText()));
+            }
+        });
+
+        bFridgeDoorToggle.setOnAction(new ButtonHandler());
+        bFreezerDoorToggle.setOnAction(new ButtonHandler());
+
+        startSimulation();
+    }
+
+
+    class ButtonHandler implements EventHandler<ActionEvent> {
+        public void handle(ActionEvent event) {
+            if (event.getSource().equals(bFridgeDoorToggle)) {
+                fridge.processEvent(CoolerContext.Events.DOOR_TOGGLE_EVENT);
+            }
+            else if (event.getSource().equals(bFreezerDoorToggle)) {
+                freezer.processEvent(CoolerContext.Events.DOOR_TOGGLE_EVENT);
+            }
+        }
+    }
 
 	/**
 	 * Indicate that the light is on
 	 */
-	private void turnFridgeLightOn() {
-		frame.lFridgeLightStatus.setText("Fridge light: On");
+	private void fridgeOpened() {
+        Platform.runLater(new Runnable() {
+            public void run() {
+                bFreezerDoorToggle.setText("Close fridge door");
+                lFridgeLightStatus.setText("Fridge light: On");
+            }
+        });
 	}
 
 	/**
 	 * Indicate that the light is off
 	 */
-	private void turnFridgeLightOff() {
-		frame.lFridgeLightStatus.setText("Fridge light: Off");
+	private void fridgeClosed() {
+        Platform.runLater(new Runnable() {
+            public void run() {
+                bFreezerDoorToggle.setText("Open fridge door");
+                lFridgeLightStatus.setText("Fridge light: Off");
+            }
+        });
 	}
 	
 	/**
 	 * Indicate that the light is on
 	 */
-	private void turnFreezerLightOn() {
-		frame.lFreezerLightStatus.setText("Freezer light: On");
+	private void freezerOpened() {
+        Platform.runLater(new Runnable() {
+            public void run() {
+                bFreezerDoorToggle.setText("Close freezer door");
+                lFreezerLightStatus.setText("Freezer light: On");
+            }
+        });
 	}
 
 	/**
 	 * Indicate that the light is off
 	 */
-	private void turnFreezerLightOff() {
-		frame.lFreezerLightStatus.setText("Freezer light: Off");
+	private void freezerClosed() {
+        Platform.runLater(new Runnable() {
+            public void run() {
+                bFreezerDoorToggle.setText("Open freezer door");
+                lFreezerLightStatus.setText("Freezer light: Off");
+            }
+        });
 	}
 	
 	/**
 	 * Indicate that the cooling is on
 	 */
 	private void turnFridgeCoolingOn() {
-		frame.lFridgeCoolingStatus.setText("Fridge cooling: Active");
+        Platform.runLater(new Runnable() {
+            public void run() {
+                lFridgeCoolingStatus.setText("Fridge cooling: Active");
+            }
+        });
 	}
 
 	/**
 	 * Indicate that the cooling is off
 	 */
 	private void turnFridgeCoolingOff() {
-		frame.lFridgeCoolingStatus.setText("Fridge cooling: Idle");
+        Platform.runLater(new Runnable() {
+            public void run() {
+                lFridgeCoolingStatus.setText("Fridge cooling: Idle");
+            }
+        });
 	}
 	
 	/**
 	 * Indicate that the cooling is on
 	 */
 	private void turnFreezerCoolingOn() {
-		frame.lFreezerCoolingStatus.setText("Freezer cooling: Active");
+        Platform.runLater(new Runnable() {
+            public void run() {
+                lFreezerCoolingStatus.setText("Freezer cooling: Active");
+            }
+        });
 	}
 
 	/**
 	 * Indicate that the cooling is off
 	 */
 	private void turnFreezerCoolingOff() {
-		frame.lFreezerCoolingStatus.setText("Freezer cooling: Idle");
+        Platform.runLater(new Runnable() {
+            public void run() {
+                lFreezerCoolingStatus.setText("Freezer cooling: Idle");
+            }
+        });
 	}
 
 	/**
@@ -192,7 +259,11 @@ public class GUIDisplay extends Display implements ActionListener {
 	 * @param value the current temp
 	 */
 	public void displayFridgeTemp(int value) {
-		frame.lFridgeTempStatus.setText("Fridge temp: " + value);
+        Platform.runLater(new Runnable() {
+            public void run() {
+                lFridgeTempStatus.setText("Fridge temp: " + value);
+            }
+        });
 	}
 	
 	/**
@@ -201,7 +272,11 @@ public class GUIDisplay extends Display implements ActionListener {
 	 * @param value the current temp
 	 */
 	public void displayFreezerTemp(int value) {
-		frame.lFreezerTempStatus.setText("Freezer temp: " + value);
+        Platform.runLater(new Runnable() {
+            public void run() {
+                lFreezerTempStatus.setText("Freezer temp: " + value);
+            }
+        });
 	}
 
 
@@ -209,24 +284,24 @@ public class GUIDisplay extends Display implements ActionListener {
     /* Contextual handlers.
      * NOTE: the use of "==" instead of "equals()" is correct here. We are comparing references, not values. */
 
-	public void turnLightOn(CoolerContext context) {
+	public void coolerOpened(CoolerContext context) {
 	    if (context == fridge) {
-	        turnFridgeLightOn();
+	        fridgeOpened();
         }
         else if (context == freezer) {
-	        turnFreezerLightOn();
+	        freezerOpened();
         }
         else {
 	        // TODO: error
         }
     }
 
-    public void turnLightOff(CoolerContext context) {
+    public void coolerClosed(CoolerContext context) {
         if (context == fridge) {
-            turnFridgeLightOff();
+            fridgeClosed();
         }
         else if (context == freezer) {
-            turnFreezerLightOff();
+            freezerClosed();
         }
         else {
             // TODO: error
@@ -279,15 +354,6 @@ public class GUIDisplay extends Display implements ActionListener {
 	 *            not used
 	 */
 	public static void main(String[] args) {
-        ConfigurationMap<String, Integer> config = new ConfigurationMap<String, Integer>(
-                new String[]{"FridgeLow", "FridgeHigh", "FreezerLow", "FreezerHigh", "RoomLow", "RoomHigh",
-                             "FridgeRateLossDoorClosed", "FridgeRateLossDoorOpen", "FreezerRateLossDoorClosed", "FreezerRateLossDoorOpen",
-                             "FridgeCompressorStartDiff", "FreezerCompressorStartDiff", "FridgeCoolRate", "FreezerCoolRate"},
-                new Integer[]{37, 41, -9, 0, 50, 75,
-                              30, 2, 10, 1,
-                              2, 1, 5, 4}
-        );
-
 	    if (args.length > 0) {
 	        Path filePath = Paths.get(args[0]);
 
@@ -312,10 +378,17 @@ public class GUIDisplay extends Display implements ActionListener {
                 }
             }
         }
-		display = new GUIDisplay();
-		roomContext = new RoomContext((config.get("RoomHigh") + config.get("RoomLow")) / 2);
-		fridge = new CoolerContext(
-		        display, // Associate our display.
+
+
+        Application.launch(args);
+	}
+
+
+	public static void startSimulation() {
+        display = new GUIDisplay();
+        roomContext = new RoomContext((config.get("RoomHigh") + config.get("RoomLow")) / 2);
+        fridge = new CoolerContext(
+                display, // Associate our display.
                 roomContext, // Associate our room context.
                 roomContext.getRoomTemp(), // Set the fridge's current temperature to the current room temperature (which is probably right when you're first turning it on)
                 (config.get("FridgeHigh") + config.get("FridgeLow")) / 2, // Set the fridge's default target temperature to the average of it's maximum and minimum (which seems reasonable)
@@ -324,14 +397,13 @@ public class GUIDisplay extends Display implements ActionListener {
                 config.get("FridgeRateLossDoorOpen"), // Set the loss rate, door open.
                 config.get("FridgeRateLossDoorClosed") // Set the loss rate, door closed.
         );
-		freezer = new CoolerContext(display, roomContext, roomContext.getRoomTemp(), (config.get("FreezerH" +
+        freezer = new CoolerContext(display, roomContext, roomContext.getRoomTemp(), (config.get("FreezerH" +
                 "igh") + config.get("FreezerLow")) / 2, config.get("FreezerCompressorStartDiff"), config.get("FreezerCoolRate"), config.get("FreezerRateLossDoorOpen"), config.get("FreezerRateLossDoorClosed"));
+    }
 
-		display.initialize();
-	}
 
 	public void initialize() {
-        this.addObserver(fridge);
-        this.addObserver(freezer);
+        //this.addObserver(fridge);
+        //this.addObserver(freezer);
     }
 }

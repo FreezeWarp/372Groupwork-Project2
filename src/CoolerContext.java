@@ -6,7 +6,8 @@ import java.util.Observer;
  */
 public class CoolerContext implements Observer {
     public enum Events {
-        DOOR_CLOSED_EVENT, DOOR_OPENED_EVENT
+        DOOR_CLOSED_EVENT, DOOR_OPENED_EVENT,
+        DOOR_TOGGLE_EVENT
     };
 
     private Display coolerDisplay;

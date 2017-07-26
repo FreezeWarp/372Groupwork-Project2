@@ -1,14 +1,8 @@
-import java.util.Observable;
-
 /**
  * Specifies what the display system should do. Note that the implementation has
  * a lot of freedom to choose its display.
  */
-public abstract class Display extends Observable {
-	static Display display;
-	static RoomContext roomContext;
-	static CoolerContext fridge;
-	static CoolerContext freezer;
+public interface Display {
 
 	/**
 	 * Do the initializations to make the context an observer
@@ -22,12 +16,12 @@ public abstract class Display extends Observable {
 	/**
 	 * Indicate that the light is on
 	 */
-	public abstract void turnLightOn(CoolerContext coolerContext);
+	public abstract void coolerOpened(CoolerContext coolerContext);
 
 	/**
 	 * Indicate that the light is off
 	 */
-	public abstract void turnLightOff(CoolerContext coolerContext);
+	public abstract void coolerClosed(CoolerContext coolerContext);
 
 	/**
 	 * Indicate that the cooling is on

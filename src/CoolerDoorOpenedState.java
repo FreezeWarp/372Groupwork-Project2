@@ -13,7 +13,7 @@ public class CoolerDoorOpenedState extends CoolerState {
     public void handle(Object event) {
         super.handle(event);
 
-        if (event.equals(CoolerContext.Events.DOOR_CLOSED_EVENT)) {
+        if (event.equals(CoolerContext.Events.DOOR_CLOSED_EVENT) || event.equals(CoolerContext.Events.DOOR_TOGGLE_EVENT)) {
             processDoorClose();
         }
     }
@@ -22,6 +22,7 @@ public class CoolerDoorOpenedState extends CoolerState {
      * Initialize the state
      */
     @Override
-    public void run() {coolerContext.getDisplay().turnLightOn(coolerContext);
+    public void run() {
+        coolerContext.getDisplay().coolerOpened(coolerContext);
     }
 }
