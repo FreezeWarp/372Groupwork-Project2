@@ -26,6 +26,11 @@ import java.util.Map;
  * We are using JavaFX's listeners (using Properties) instead of custom listener classes. This is probably a good idea, because those methods exist for a reason and are becoming the default choice for GUIs in the Java world.
  *
  */
+
+/*
+ * TODO:
+ * Events for door close (fired from GUI), door open (fired from GUI), start cooling (fired from CoolingStrategy), and stop cooling (fired from CoolingStrategy). Have states listen for these methods.
+ */
 public class GUIDisplay extends Application {
     /*################################
      * Primary Properties
