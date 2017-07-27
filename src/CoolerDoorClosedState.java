@@ -4,6 +4,10 @@
 public class CoolerDoorClosedState extends CoolerState {
     protected boolean lightOn = false;
 
+    public CoolerDoorClosedState() {
+
+    }
+
     public CoolerDoorClosedState(CoolerContext coolerContext) {
         this.coolerContext = coolerContext;
     }

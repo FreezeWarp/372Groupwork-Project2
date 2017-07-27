@@ -21,6 +21,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+/*
+ * Key Design Notes:
+ * We are using JavaFX's listeners (using Properties) instead of custom listener classes. This is probably a good idea, because those methods exist for a reason and are becoming the default choice for GUIs in the Java world.
+ *
+ */
 public class GUIDisplay extends Application {
     /*################################
      * Primary Properties
