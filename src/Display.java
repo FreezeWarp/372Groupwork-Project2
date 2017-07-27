@@ -4,11 +4,6 @@
  */
 public interface Display {
 
-	/**
-	 * Do the initializations to make the context an observer
-	 */
-	public abstract void initialize();
-
 	public abstract void displayFridgeTemp(int time);
 	
 	public abstract void displayFreezerTemp(int time);

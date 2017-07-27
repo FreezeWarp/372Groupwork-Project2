@@ -20,12 +20,34 @@ import java.nio.file.Paths;
 
 
 public class GUIDisplay extends Application implements Display {
+    /*################################
+     * Primary Properties
+     *###############################*/
+
+    /**
+     * A reference to ourself.
+     */
     static Display display;
+
+    /**
+     * A reference to the room our fridge and freezer are in.
+     */
     static RoomContext roomContext;
+
+    /**
+     * A reference to our fridge cooler.
+     */
     static CoolerContext fridge;
+
+    /**
+     * A reference to our freezer cooler.
+     */
     static CoolerContext freezer;
 
 
+    /**
+     * Our configuration data. Defaults will be overridden in {@link GUIDisplay#main(String[])} if possible.
+     */
     static ConfigurationMap<String, Integer> config = new ConfigurationMap<String, Integer>(
             new String[]{"FridgeLow", "FridgeHigh", "FreezerLow", "FreezerHigh", "RoomLow", "RoomHigh",
                     "FridgeRateLossDoorClosed", "FridgeRateLossDoorOpen", "FreezerRateLossDoorClosed", "FreezerRateLossDoorOpen",
@@ -37,34 +59,86 @@ public class GUIDisplay extends Application implements Display {
 
 
 
-    private static Button bSetRoomTemp ;
-    private static Button bSetFridgeTemp ;
-    private static Button bSetFreezerTemp ;
-    private static Button bFridgeDoorToggle ;
-    private static Button bFreezerDoorToggle ;
-    private static Label lFridgeTemp ;
-    private static Label lFreezerTemp ;
-    private static Label lStatus ;
-    private static Label lFridgeLightStatus ;
-    private static Label lFreezerLightStatus ;
-    private static Label lFridgeTempStatus ;
-    private static Label lFreezerTempStatus ;
-    private static Label lRoomTemp ;
-    private static Label lFridgeCoolingStatus ;
-    private static Label lFreezerCoolingStatus ;
-    private static Label lPlaceHolder ;
-    private static Label lPlaceHolder2 ;
-    private static Label lPlaceHolder3 ;
-    private static Label lPlaceHolder4 ;
-    private static Label lPlaceHolder5 ;
-    private static Label lPlaceHolder6 ;
-    private static TextField tRoomTemp ;
-    private static TextField tFridgeTemp ;
-    private static TextField tFreezerTemp ;
 
-    
+    /*################################
+     * Program Entry-Point
+     *###############################*/
 
+    /**
+     * Entry-point for program. Opens config from file in first argument and then launches JavaFX.
+     *
+     * @param args Command-line arguments. The first one will be used as a configuration file, if available.
+     */
+    public static void main(String[] args) {
+        if (args.length > 0) {
+            Path filePath = Paths.get(args[0]);
+
+            System.out.println("Attempting to use " + filePath.toAbsolutePath() + " as configuration file.");
+            if (!Files.exists(filePath)) {
+                System.err.println("Could not use " + filePath.toAbsolutePath() + " as configuration file. The file does not exist.");
+            }
+            else {
+                try {
+                    Files.lines(filePath).forEach((line) -> {
+                        String[] lineParts = line.split("=");
+                        try {
+                            config.put(lineParts[0].trim(), Integer.parseInt(lineParts[1].trim()));
+                        } catch (NoKeyException exception) {
+                            System.err.println("Config value is not recgonised: " + lineParts[0]);
+                        } catch (Exception exceptiopn) {
+                            System.err.println("Could not parse config value: " + lineParts[0] + "=" + lineParts[1]);
+                        }
+                    });
+                } catch (IOException exception) {
+                    System.err.println("Could not use " + filePath.toAbsolutePath() + " as configuration file. A file IO exception occured when reading it: " + exception);
+                }
+            }
+        }
+
+
+        Application.launch(args);
+    }
+
+
+
+
+    /*################################
+     * JavaFX Properties
+     *###############################*/
+
+    private static Button bSetRoomTemp;
+    private static Button bSetFridgeTemp;
+    private static Button bSetFreezerTemp;
+    private static Button bFridgeDoorToggle;
+    private static Button bFreezerDoorToggle;
+    private static Label lFridgeTemp;
+    private static Label lFreezerTemp;
+    private static Label lStatus;
+    private static Label lFridgeLightStatus;
+    private static Label lFreezerLightStatus;
+    private static Label lFridgeTempStatus;
+    private static Label lFreezerTempStatus;
+    private static Label lRoomTemp;
+    private static Label lFridgeCoolingStatus;
+    private static Label lFreezerCoolingStatus;
+    private static TextField tRoomTemp;
+    private static TextField tFridgeTemp;
+    private static TextField tFreezerTemp;
+
+
+
+
+    /*################################
+     * JavaFX Entry-Point
+     *###############################*/
+
+    /**
+     * Entry-point for JavaFX.
+     *
+     * @param primaryStage Set by JavaFx.
+     */
 	public void start(Stage primaryStage) {
+	    /* Initialise all static display elements. */
         bSetRoomTemp = new Button("Set room temp");
         bSetFridgeTemp = new Button("Set desired fridge temp");
         bSetFreezerTemp = new Button("Set desired freezer temp");
@@ -80,53 +154,61 @@ public class GUIDisplay extends Application implements Display {
         lRoomTemp = new Label();
         lFridgeCoolingStatus = new Label("Fridge cooling: ");
         lFreezerCoolingStatus = new Label("Freezer cooling: ");
-        lPlaceHolder = new Label();
-        lPlaceHolder2 = new Label();
-        lPlaceHolder3 = new Label();
-        lPlaceHolder4 = new Label();
-        lPlaceHolder5 = new Label();
-        lPlaceHolder6 = new Label();
         tRoomTemp = new TextField();
         tFridgeTemp = new TextField();
         tFreezerTemp = new TextField();
         
         
-        
+
+        /* Build Our Interface */
+        // Stores the overall frame, composed of the main frame and button frame.
         VBox overallFrame = new VBox(5);
 
+
+        // Stores the main frame, composed of the status and config frames.
         HBox mainFrame = new HBox(5);
 
+        // Stores the config frame, composed of the labels and buttons for setting certain configuration at run-time.
         VBox configFrame = new VBox(10);
         configFrame.getChildren().add((new HBox(5, tRoomTemp, bSetRoomTemp)));
         configFrame.getChildren().add((new HBox(5, tFridgeTemp, bSetFridgeTemp)));
         configFrame.getChildren().add((new HBox(5, tFreezerTemp, bSetFreezerTemp)));
 
+        // Stores the status frame, composed of status labels for temperature, etc.
         VBox statusFrame = new VBox(10);
         statusFrame.getChildren().addAll(lFridgeCoolingStatus, lFridgeTempStatus, lFreezerCoolingStatus, lFreezerTempStatus, lRoomTemp);
-        statusFrame.setMinWidth(150);
+        statusFrame.setMinWidth(150); // Should keep things long enough to prevent resizes when "Idle" switches to "Active"
 
+        // Add the status, config frames to main frame.
         mainFrame.getChildren().addAll(statusFrame, configFrame);
 
+
+        // Stores general button actions for opening/closing fridge and freezer
         HBox buttonFrame = new HBox(25);
         buttonFrame.getChildren().addAll(bFreezerDoorToggle, bFridgeDoorToggle);
 
+
+        // Add main frame, button frame to overall frame.
         overallFrame.getChildren().addAll(mainFrame, buttonFrame);
 
+
+        // Center stuff.
         overallFrame.setAlignment(Pos.CENTER);
         configFrame.setAlignment(Pos.CENTER);
         mainFrame.setAlignment(Pos.CENTER);
         buttonFrame.setAlignment(Pos.CENTER);
 
-        // add the layout to scene
+
+        // Add the overall frame to a scene, add the scene to the primary stage, then display the stage.
         Scene scene = new Scene(overallFrame);
-
-        // add scene to the stage
         primaryStage.setScene(scene);
-
-        // Title and show
         primaryStage.setTitle("Coolers Interface");
         primaryStage.show();
 
+
+
+        /* Action Listeners */
+        // Room Temperature Change
         bSetRoomTemp.setOnAction(new EventHandler<ActionEvent> () {
             public void handle(ActionEvent e) {
                 int value = Integer.parseInt(tRoomTemp.getText());
@@ -142,7 +224,8 @@ public class GUIDisplay extends Application implements Display {
                 }
             }
         });
-        
+
+        // Freezer Target Temperature Change
         bSetFreezerTemp.setOnAction(new EventHandler<ActionEvent> () {
             public void handle(ActionEvent e) {
                 int value = Integer.parseInt(tFreezerTemp.getText());
@@ -159,6 +242,7 @@ public class GUIDisplay extends Application implements Display {
             }
         });
 
+        // Fridge Target Temperature Change
         bSetFridgeTemp.setOnAction(new EventHandler<ActionEvent> () {
             public void handle(ActionEvent e) {
                 int value = Integer.parseInt(tFridgeTemp.getText());
@@ -175,13 +259,27 @@ public class GUIDisplay extends Application implements Display {
             }
         });
 
+        // Open/Close Door
         bFridgeDoorToggle.setOnAction(new ButtonHandler());
         bFreezerDoorToggle.setOnAction(new ButtonHandler());
 
+
+
+        /* Initialise Our Objects */
         startSimulation();
     }
 
 
+
+
+    /*################################
+     * Event Handlers
+     *###############################*/
+
+    /**
+     * Handles all general button presses in the program.
+     * (Specific button press handlers defined elsewhere.)
+     */
     class ButtonHandler implements EventHandler<ActionEvent> {
         public void handle(ActionEvent event) {
             if (event.getSource().equals(bFridgeDoorToggle)) {
@@ -193,6 +291,18 @@ public class GUIDisplay extends Application implements Display {
         }
     }
 
+
+
+
+    /*################################
+     * JavaFX Helpers
+     *###############################*/
+
+    /**
+     * Display a generic error-like alert message.
+     *
+     * @param text The text to display.
+     */
     public void alert(String text) {
         Label label = new Label(text);
         label.setWrapText(true);
@@ -202,6 +312,13 @@ public class GUIDisplay extends Application implements Display {
         dialog.getDialogPane().setContent(label);
         dialog.showAndWait();
     }
+
+
+
+
+    /*################################
+     * Display Functions for Two Coolers
+     *###############################*/
 
 	/**
 	 * Indicate that the light is on
@@ -323,8 +440,11 @@ public class GUIDisplay extends Application implements Display {
 
 
 
-    /* Contextual handlers.
-     * NOTE: the use of "==" instead of "equals()" is correct here. We are comparing references, not values. */
+
+    /*################################
+     * Display Functions for Arbitrary Coolers, from Display Interface
+     * NOTE: the use of "==" instead of "equals()" is correct here. We are comparing references, not values.
+     *###############################*/
 
 	public void coolerOpened(CoolerContext context) {
 	    if (context == fridge) {
@@ -388,44 +508,13 @@ public class GUIDisplay extends Application implements Display {
 
 
 
+    /*################################
+     * Entry-Point for Stimulation
+     *###############################*/
 
-	/**
-	 * The main method. Creates the interface
-	 * 
-	 * @param args
-	 *            not used
-	 */
-	public static void main(String[] args) {
-	    if (args.length > 0) {
-	        Path filePath = Paths.get(args[0]);
-
-            System.out.println("Attempting to use " + filePath.toAbsolutePath() + " as configuration file.");
-            if (!Files.exists(filePath)) {
-                System.err.println("Could not use " + filePath.toAbsolutePath() + " as configuration file. The file does not exist.");
-            }
-            else {
-                try {
-                    Files.lines(filePath).forEach((line) -> {
-                        String[] lineParts = line.split("=");
-                        try {
-                            config.put(lineParts[0].trim(), Integer.parseInt(lineParts[1].trim()));
-                        } catch (NoKeyException exception) {
-                            System.err.println("Config value is not recgonised: " + lineParts[0]);
-                        } catch (Exception exceptiopn) {
-                            System.err.println("Could not parse config value: " + lineParts[0] + "=" + lineParts[1]);
-                        }
-                    });
-                } catch (IOException exception) {
-                    System.err.println("Could not use " + filePath.toAbsolutePath() + " as configuration file. A file IO exception occured when reading it: " + exception);
-                }
-            }
-        }
-
-
-        Application.launch(args);
-	}
-
-
+    /**
+     * Constructs the fridge, freezer, room, and display references.
+     */
 	public static void startSimulation() {
         display = new GUIDisplay();
         roomContext = new RoomContext((config.get("RoomHigh") + config.get("RoomLow")) / 2);
@@ -445,11 +534,5 @@ public class GUIDisplay extends Application implements Display {
                 "igh") + config.get("FreezerLow")) / 2, config.get("FreezerCompressorStartDiff"), config.get("FreezerCoolRate"), config.get("FreezerRateLossDoorOpen"), config.get("FreezerRateLossDoorClosed"));
 
         lRoomTemp.textProperty().bind(Bindings.concat("Room temperature: ", roomContext.roomTempProperty()));
-    }
-
-
-	public void initialize() {
-        //this.addObserver(fridge);
-        //this.addObserver(freezer);
     }
 }
