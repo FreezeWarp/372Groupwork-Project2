@@ -1,3 +1,5 @@
+import javafx.beans.property.IntegerProperty;
+
 import java.util.Observable;
 import java.util.Observer;
 
@@ -10,20 +12,59 @@ public class CoolerContext implements Observer {
         DOOR_TOGGLE_EVENT
     };
 
+    /**
+     * The display to send cooler updates to.
+     */
     private Display coolerDisplay;
+
+    /**
+     * The room this cooler is located in.
+     */
     private RoomContext roomContext;
 
+    /**
+     * The current state of the cooler.
+     */
     private CoolerState currentState;
+
+    /**
+     * The cooler's door-closed state.
+     */
     private CoolerDoorClosedState doorClosedState;
+
+    /**
+     * The cooler's door-opened state.
+     */
     private CoolerDoorOpenedState doorOpenedState;
 
-    private int coolerTemp;
+    /**
+     * The cooler's current temperature.
+     */
+    private IntegerProperty coolerTemp;
 
+    /**
+     * The difference from the desired temperature, {@link CoolerContext#desiredCoolerTemp} at which the cooler will start/stop.
+     */
     private int compressorStartDiff;
+
+    /**
+     * The temperature the cooler should try to reach.
+     */
     private int desiredCoolerTemp;
 
+    /**
+     * The number of ticks it takes for the cooler to lose one temperature degree when it is in the door opened state, {@link CoolerDoorOpenedState}
+     */
     private int coolerLossRateOpen;
+
+    /**
+     * The number of ticks it takes for the cooler to lose one temperature degree when it is in the door closed state, {@link CoolerDoorClosedState}
+     */
     private int coolerLossRateClose;
+
+    /**
+     * The number of ticks it takes for the cooler to gain one degree when it is cooling.
+     */
     private int coolerCoolRate;
 
 
@@ -85,71 +126,115 @@ public class CoolerContext implements Observer {
     }
 
     /**
-     * Gets the display
-     *
-     * @return the display
+     * @return The display reference object with this cooler.
      */
     public Display getDisplay() {
         return coolerDisplay;
     }
 
     /**
-     * Gets the temperature
-     *
-     *  @return coolerTemp
+     * @return {@link CoolerContext#coolerTemp} as an integer
      */
     public int getCoolerTemp() {
-        return coolerTemp;
+        return coolerTemp.get();
     }
 
     /**
-     * Sets the temperature 
-     *
-     * @param temp
-     *            temp of the cooler
+     * Sets integer value of {@link CoolerContext#coolerTemp}
      */
     public void setCoolerTemp(int temp) {
-        coolerTemp = temp;
+        coolerTemp.set(temp);
+    }
+
+    /**
+     * @return {@link CoolerContext#coolerTemp} as a property
+     */
+    public IntegerProperty coolerTempProperty() {
+        return coolerTemp;
     }
 
 
+    /**
+     * @return {@link CoolerContext#desiredCoolerTemp}
+     */
     public int getDesiredCoolerTemp() {
         return desiredCoolerTemp;
     }
+
+    /**
+     * Sets {@link CoolerContext#desiredCoolerTemp}
+     */
     public void setDesiredCoolerTemp(int temp) {
         desiredCoolerTemp = temp;
     }
 
+    /**
+     * @return {@link CoolerContext#coolerLossRateOpen}
+     */
     public int getCoolerLossRateOpen() {
         return coolerLossRateOpen;
     }
+
+    /**
+     * Sets {@link CoolerContext#coolerLossRateOpen}
+     */
     public void setCoolerLossRateOpen(int rate) {
         coolerLossRateOpen = rate;
     }
 
+    /**
+     * @return {@link CoolerContext#coolerLossRateClose}
+     */
     public int getCoolerLossRateClose() {
         return coolerLossRateClose;
     }
+
+    /**
+     * Sets {@link CoolerContext#coolerLossRateClose}
+     */
     public void setCoolerLossRateClose(int rate) {
         coolerLossRateClose = rate;
     }
 
+    /**
+     * @return {@link CoolerContext#coolerCoolRate}
+     */
     public int getCoolerCoolRate() {
         return coolerCoolRate;
     }
+
+    /**
+     * Sets {@link CoolerContext#coolerCoolRate}
+     */
     public void setCoolerCoolRate(int rate) {
         coolerCoolRate = rate;
     }
 
+    /**
+     * @return {@link CoolerContext#compressorStartDiff}
+     */
     public int getCompressorStartDiff() { return compressorStartDiff; }
+
+    /**
+     * Sets {@link CoolerContext#compressorStartDiff}
+     */
     public void setCompressorStartDiff(int compressorStartDiff) { this.compressorStartDiff = compressorStartDiff; }
 
+    /**
+     * @return {@link CoolerContext#roomContext}
+     */
     public RoomContext getRoomContext() { return roomContext; }
 
+    /**
+     * @return {@link CoolerContext#doorOpenedState}
+     */
     public CoolerDoorOpenedState getDoorOpenedState() {
         return doorOpenedState;
     }
 
+    /**
+     * @return {@link CoolerContext#doorClosedState}
+     */
     public CoolerDoorClosedState getDoorClosedState() {
         return doorClosedState;
     }
