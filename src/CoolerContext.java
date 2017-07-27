@@ -16,11 +16,6 @@ public class CoolerContext implements Observer {
     };
 
     /**
-     * The display to send cooler updates to.
-     */
-    private Display coolerDisplay;
-
-    /**
      * The room this cooler is located in.
      */
     private RoomContext roomContext;
@@ -134,13 +129,6 @@ public class CoolerContext implements Observer {
     public void changeCurrentState(CoolerState nextState) {
         currentState.set(nextState);
         nextState.run();
-    }
-
-    /**
-     * @return The display reference object with this cooler.
-     */
-    public Display getDisplay() {
-        return coolerDisplay;
     }
 
     /**

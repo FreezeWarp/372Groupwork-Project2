@@ -102,12 +102,9 @@ public class GUIDisplay extends Application {
     /*################################
      * JavaFX Properties
      *###############################*/
-    private static TextField tRoomTemp;
-    private static TextField tFridgeTemp;
-    private static TextField tFreezerTemp;
-
     private static ConfigurationMap<String, Label> labels;
     private static ConfigurationMap<String, Button> buttons;
+    private static ConfigurationMap<String, TextField> textfields;
 
 
 
@@ -163,10 +160,18 @@ public class GUIDisplay extends Application {
                 }
         );
 
-	    /* Initialise all static display elements. */
-        tRoomTemp = new TextField();
-        tFridgeTemp = new TextField();
-        tFreezerTemp = new TextField();
+        textfields = new ConfigurationMap<>(
+                new String[] {
+                        "tRoomTemp",
+                        "tFridgeTemp",
+                        "tFreezerTemp",
+                },
+                new TextField[] {
+                        new TextField(),
+                        new TextField(),
+                        new TextField()
+                }
+        );
         
         
 
@@ -180,9 +185,9 @@ public class GUIDisplay extends Application {
 
         // Stores the config frame, composed of the labels and buttons for setting certain configuration at run-time.
         VBox configFrame = new VBox(10);
-        configFrame.getChildren().add((new HBox(5, tRoomTemp, buttons.get("bSetRoomTemp"))));
-        configFrame.getChildren().add((new HBox(5, tFridgeTemp, buttons.get("bSetFridgeTemp"))));
-        configFrame.getChildren().add((new HBox(5, tFreezerTemp, buttons.get("bSetFreezerTemp"))));
+        configFrame.getChildren().add((new HBox(5, textfields.get("tRoomTemp"), buttons.get("bSetRoomTemp"))));
+        configFrame.getChildren().add((new HBox(5, textfields.get("tFridgeTemp"), buttons.get("bSetFridgeTemp"))));
+        configFrame.getChildren().add((new HBox(5, textfields.get("tFreezerTemp"), buttons.get("bSetFreezerTemp"))));
 
         // Stores the status frame, composed of status labels for temperature, etc.
         VBox statusFrame = new VBox(10);
@@ -228,7 +233,7 @@ public class GUIDisplay extends Application {
         /* Action Listeners */
         // Room Temperature Change
         buttons.get("bSetRoomTemp").setOnAction((event) -> {
-            int value = Integer.parseInt(tRoomTemp.getText());
+            int value = Integer.parseInt(textfields.get("tRoomTemp").getText());
 
             if (value > config.get("RoomHigh")) {
                 alert("The room cannot be that warm. Current maximum is " + config.get("RoomHigh") + ".");
@@ -243,7 +248,7 @@ public class GUIDisplay extends Application {
 
         // Freezer Target Temperature Change
         buttons.get("bSetFreezerTemp").setOnAction((event) -> {
-            int value = Integer.parseInt(tFreezerTemp.getText());
+            int value = Integer.parseInt(textfields.get("tFreezerTemp").getText());
 
             if (value > config.get("FreezerHigh")) {
                 alert("The freezer cannot be that warm. Current maximum is " + config.get("FreezerHigh") + ".");
@@ -258,7 +263,7 @@ public class GUIDisplay extends Application {
 
         // Fridge Target Temperature Change
         buttons.get("bSetFridgeTemp").setOnAction((event) -> {
-            int value = Integer.parseInt(tFridgeTemp.getText());
+            int value = Integer.parseInt(textfields.get("tFridgeTemp").getText());
 
             if (value > config.get("FridgeHigh")) {
                 alert("The fridge cannot be that warm. Current maximum is " + config.get("FridgeHigh") + ".");
