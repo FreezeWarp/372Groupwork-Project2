@@ -1,6 +1,5 @@
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -11,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -149,8 +149,8 @@ public class GUIDisplay extends Application implements Display {
         lStatus = new Label("Status");
         lFridgeLightStatus = new Label("Fridge light: Off");
         lFreezerLightStatus = new Label("Freezer light: Off");
-        lFridgeTempStatus = new Label("Fridge temp: ");
-        lFreezerTempStatus = new Label("Freezer temp: ");
+        lFridgeTempStatus = new Label();
+        lFreezerTempStatus = new Label();
         lRoomTemp = new Label();
         lFridgeCoolingStatus = new Label("Fridge cooling: ");
         lFreezerCoolingStatus = new Label("Freezer cooling: ");
@@ -162,7 +162,7 @@ public class GUIDisplay extends Application implements Display {
 
         /* Build Our Interface */
         // Stores the overall frame, composed of the main frame and button frame.
-        VBox overallFrame = new VBox(5);
+        VBox overallFrame = new VBox(25);
 
 
         // Stores the main frame, composed of the status and config frames.
@@ -177,7 +177,7 @@ public class GUIDisplay extends Application implements Display {
         // Stores the status frame, composed of status labels for temperature, etc.
         VBox statusFrame = new VBox(10);
         statusFrame.getChildren().addAll(lFridgeCoolingStatus, lFridgeTempStatus, lFreezerCoolingStatus, lFreezerTempStatus, lRoomTemp);
-        statusFrame.setMinWidth(150); // Should keep things long enough to prevent resizes when "Idle" switches to "Active"
+        statusFrame.setMinWidth(200); // Should keep things long enough to prevent resizes when "Idle" switches to "Active"
 
         // Add the status, config frames to main frame.
         mainFrame.getChildren().addAll(statusFrame, configFrame);
@@ -209,53 +209,47 @@ public class GUIDisplay extends Application implements Display {
 
         /* Action Listeners */
         // Room Temperature Change
-        bSetRoomTemp.setOnAction(new EventHandler<ActionEvent> () {
-            public void handle(ActionEvent e) {
-                int value = Integer.parseInt(tRoomTemp.getText());
+        bSetRoomTemp.setOnAction((event) -> {
+            int value = Integer.parseInt(tRoomTemp.getText());
 
-                if (value > config.get("RoomHigh")) {
-                    alert("The room cannot be that warm. Current maximum is " + config.get("RoomHigh") + ".");
-                }
-                else if (value < config.get("RoomLow")) {
-                    alert("The room cannot be that cool. Current minimum is " + config.get("RoomLow") + ".");
-                }
-                else {
-                    roomContext.setRoomTemp(value);
-                }
+            if (value > config.get("RoomHigh")) {
+                alert("The room cannot be that warm. Current maximum is " + config.get("RoomHigh") + ".");
+            }
+            else if (value < config.get("RoomLow")) {
+                alert("The room cannot be that cool. Current minimum is " + config.get("RoomLow") + ".");
+            }
+            else {
+                roomContext.setRoomTemp(value);
             }
         });
 
         // Freezer Target Temperature Change
-        bSetFreezerTemp.setOnAction(new EventHandler<ActionEvent> () {
-            public void handle(ActionEvent e) {
-                int value = Integer.parseInt(tFreezerTemp.getText());
+        bSetFreezerTemp.setOnAction((event) -> {
+            int value = Integer.parseInt(tFreezerTemp.getText());
 
-                if (value > config.get("FreezerHigh")) {
-                    alert("The freezer cannot be that warm. Current maximum is " + config.get("FreezerHigh") + ".");
-                }
-                else if (value < config.get("FreezerLow")) {
-                    alert("The freezer cannot be that cool. Current minimum is " + config.get("FreezerLow") + ".");
-                }
-                else {
-                    freezer.setDesiredCoolerTemp(value);
-                }
+            if (value > config.get("FreezerHigh")) {
+                alert("The freezer cannot be that warm. Current maximum is " + config.get("FreezerHigh") + ".");
+            }
+            else if (value < config.get("FreezerLow")) {
+                alert("The freezer cannot be that cool. Current minimum is " + config.get("FreezerLow") + ".");
+            }
+            else {
+                freezer.setDesiredCoolerTemp(value);
             }
         });
 
         // Fridge Target Temperature Change
-        bSetFridgeTemp.setOnAction(new EventHandler<ActionEvent> () {
-            public void handle(ActionEvent e) {
-                int value = Integer.parseInt(tFridgeTemp.getText());
+        bSetFridgeTemp.setOnAction((event) -> {
+            int value = Integer.parseInt(tFridgeTemp.getText());
 
-                if (value > config.get("FridgeHigh")) {
-                    alert("The fridge cannot be that warm. Current maximum is " + config.get("FridgeHigh") + ".");
-                }
-                else if (value < config.get("FridgeLow")) {
-                    alert("The fridge cannot be that cool. Current minimum is " + config.get("FridgeLow") + ".");
-                }
-                else {
-                    fridge.setDesiredCoolerTemp(value);
-                }
+            if (value > config.get("FridgeHigh")) {
+                alert("The fridge cannot be that warm. Current maximum is " + config.get("FridgeHigh") + ".");
+            }
+            else if (value < config.get("FridgeLow")) {
+                alert("The fridge cannot be that cool. Current minimum is " + config.get("FridgeLow") + ".");
+            }
+            else {
+                fridge.setDesiredCoolerTemp(value);
             }
         });
 
@@ -412,32 +406,6 @@ public class GUIDisplay extends Application implements Display {
         });
 	}
 
-	/**
-	 * display the fridge temperature
-	 * 
-	 * @param value the current temp
-	 */
-	public void displayFridgeTemp(int value) {
-        Platform.runLater(new Runnable() {
-            public void run() {
-                lFridgeTempStatus.setText("Fridge temp: " + value);
-            }
-        });
-	}
-	
-	/**
-	 * display the freezer temperature
-	 * 
-	 * @param value the current temp
-	 */
-	public void displayFreezerTemp(int value) {
-        Platform.runLater(new Runnable() {
-            public void run() {
-                lFreezerTempStatus.setText("Freezer temp: " + value);
-            }
-        });
-	}
-
 
 
 
@@ -470,16 +438,10 @@ public class GUIDisplay extends Application implements Display {
         }
     }
 
+    /**
+     * Unused; dynamic binding on {@link CoolerContext#coolerTempProperty()} is used instead.
+     */
     public void displayTemp(CoolerContext context) {
-        if (context == fridge) {
-            displayFridgeTemp(context.getCoolerTemp());
-        }
-        else if (context == freezer) {
-            displayFreezerTemp(context.getCoolerTemp());
-        }
-        else {
-            // TODO: error
-        }
     }
 
     public void turnCoolingOn(CoolerContext context) {
@@ -517,8 +479,12 @@ public class GUIDisplay extends Application implements Display {
      */
 	public static void startSimulation() {
         display = new GUIDisplay();
-        roomContext = new RoomContext((config.get("RoomHigh") + config.get("RoomLow")) / 2);
 
+        // Initialise Room Context
+        roomContext = new RoomContext((config.get("RoomHigh") + config.get("RoomLow")) / 2);
+        lRoomTemp.setText("Room temperature: " + roomContext.getRoomTemp());
+
+        // Initialise Fridge
         fridge = new CoolerContext(
                 display, // Associate our display.
                 roomContext, // Associate our room context.
@@ -530,9 +496,26 @@ public class GUIDisplay extends Application implements Display {
                 config.get("FridgeRateLossDoorClosed") // Set the loss rate, door closed.
         );
 
+        // Initialise Freezer
         freezer = new CoolerContext(display, roomContext, roomContext.getRoomTemp(), (config.get("FreezerH" +
                 "igh") + config.get("FreezerLow")) / 2, config.get("FreezerCompressorStartDiff"), config.get("FreezerCoolRate"), config.get("FreezerRateLossDoorOpen"), config.get("FreezerRateLossDoorClosed"));
 
-        lRoomTemp.textProperty().bind(Bindings.concat("Room temperature: ", roomContext.roomTempProperty()));
+        // Listeners for room, fridge, and freezer temp changes
+        roomContext.roomTempProperty().addListener((obs, oldValue, newValue) ->
+                Platform.runLater(() -> lRoomTemp.setText("Room temperature: " + newValue)));
+
+        fridge.coolerTempProperty().addListener((obs, oldValue, newValue) ->
+            Platform.runLater(() -> {
+                lFridgeTempStatus.setText("Fridge temperature: " + newValue);
+                lFridgeTempStatus.setTextFill((int) newValue > config.get("FridgeHigh") ? Color.RED : Color.BLACK);
+            })
+        );
+
+        freezer.coolerTempProperty().addListener((obs, oldValue, newValue) ->
+            Platform.runLater(() -> {
+                lFreezerTempStatus.setText("Freezer temperature: " + newValue);
+                lFreezerTempStatus.setTextFill((int) newValue > config.get("FreezerHigh") ? Color.RED : Color.BLACK);
+            })
+        );
     }
 }

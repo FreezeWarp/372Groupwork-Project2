@@ -4,10 +4,6 @@
  */
 public interface Display {
 
-	public abstract void displayFridgeTemp(int time);
-	
-	public abstract void displayFreezerTemp(int time);
-
 	/**
 	 * Indicate that the light is on
 	 */

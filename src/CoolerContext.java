@@ -1,4 +1,5 @@
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -40,7 +41,7 @@ public class CoolerContext implements Observer {
     /**
      * The cooler's current temperature.
      */
-    private IntegerProperty coolerTemp;
+    private final IntegerProperty coolerTemp = new SimpleIntegerProperty();
 
     /**
      * The difference from the desired temperature, {@link CoolerContext#desiredCoolerTemp} at which the cooler will start/stop.

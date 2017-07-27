@@ -10,16 +10,16 @@ public class RoomContext {
 
 	/**
 	 * Gets the temperature
-	 * 
+	 *
 	 *  @return freezerTemp
 	 */
 	public int getRoomTemp() {
 		return roomTemp.get();
 	}
-	
+
 	/**
 	 * Sets the temperature 
-	 * 
+	 *
 	 * @param temp
 	 *            temp of the room
 	 */
