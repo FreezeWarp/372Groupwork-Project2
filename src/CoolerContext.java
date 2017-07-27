@@ -1,5 +1,7 @@
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -26,7 +28,7 @@ public class CoolerContext implements Observer {
     /**
      * The current state of the cooler.
      */
-    private CoolerState currentState;
+    private ObjectProperty<CoolerState> currentState = new SimpleObjectProperty<CoolerState>();
 
     /**
      * The cooler's door-closed state.
@@ -68,20 +70,28 @@ public class CoolerContext implements Observer {
      */
     private int coolerCoolRate;
 
+    /**
+     * The strategy used for cooling.
+     */
+    private CoolingStrategy coolingStrategy;
 
-    public CoolerContext(Display display, RoomContext roomContext) {
-        this.coolerDisplay = display;
+
+
+    public CoolerContext(RoomContext roomContext) {
         this.roomContext = roomContext;
 
         this.doorClosedState = new CoolerDoorClosedState(this);
         this.doorOpenedState = new CoolerDoorOpenedState(this);
 
         this.changeCurrentState(doorClosedState);
+
+        this.coolingStrategy = new DefaultCoolingStrategy(this, Timer.instance());
+
         Timer.instance().addObserver(this);
     }
 
-    public CoolerContext(Display display, RoomContext roomContext, int initialTemp, int targetTemp, int compressorStartDiff, int coolRate, int lossRateOpen, int lossRateClosed) {
-        this(display, roomContext);
+    public CoolerContext(RoomContext roomContext, int initialTemp, int targetTemp, int compressorStartDiff, int coolRate, int lossRateOpen, int lossRateClosed) {
+        this(roomContext);
 
         this.setCoolerTemp(initialTemp);
         this.setDesiredCoolerTemp(targetTemp);
@@ -102,7 +112,7 @@ public class CoolerContext implements Observer {
      */
     @Override
     public void update(Observable observable, Object arg) {
-        currentState.handle(arg);
+        currentState.get().handle(arg);
     }
 
     /**
@@ -112,7 +122,7 @@ public class CoolerContext implements Observer {
      *            the event from the GUI
      */
     public void processEvent(Object arg) {
-        currentState.handle(arg);
+        currentState.get().handle(arg);
     }
 
     /**
@@ -122,7 +132,7 @@ public class CoolerContext implements Observer {
      *            the next state
      */
     public void changeCurrentState(CoolerState nextState) {
-        currentState = nextState;
+        currentState.set(nextState);
         nextState.run();
     }
 
@@ -225,6 +235,25 @@ public class CoolerContext implements Observer {
      * @return {@link CoolerContext#roomContext}
      */
     public RoomContext getRoomContext() { return roomContext; }
+
+    public CoolingStrategy getCoolingStrategy() {
+        return coolingStrategy;
+    }
+
+
+    /**
+     * @return {@link CoolerContext#currentState} as a CoolerState
+     */
+    public CoolerState getCurrentState() {
+        return currentState.get();
+    }
+
+    /**
+     * @return {@link CoolerContext#currentState} as an ObjectProperty<CoolerState>
+     */
+    public ObjectProperty<CoolerState> currentStateProperty() {
+        return currentState;
+    }
 
     /**
      * @return {@link CoolerContext#doorOpenedState}

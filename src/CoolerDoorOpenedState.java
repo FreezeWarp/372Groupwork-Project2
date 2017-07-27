@@ -18,11 +18,14 @@ public class CoolerDoorOpenedState extends CoolerState {
         }
     }
 
+    public boolean isLightOn() {
+        return true;
+    }
+
     /**
      * Initialize the state
      */
     @Override
     public void run() {
-        coolerContext.getDisplay().coolerOpened(coolerContext);
     }
 }

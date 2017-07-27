@@ -2,6 +2,8 @@
  * Created by joseph on 23/07/17.
  */
 public class CoolerDoorClosedState extends CoolerState {
+    protected boolean lightOn = false;
+
     public CoolerDoorClosedState(CoolerContext coolerContext) {
         this.coolerContext = coolerContext;
     }
@@ -18,11 +20,14 @@ public class CoolerDoorClosedState extends CoolerState {
         }
     }
 
+    public boolean isLightOn() {
+        return false;
+    }
+
     /**
      * initialize the state
      *
      */
     public void run() {
-        coolerContext.getDisplay().coolerClosed(coolerContext);
     }
 }

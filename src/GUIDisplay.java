@@ -17,17 +17,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 
-public class GUIDisplay extends Application implements Display {
+public class GUIDisplay extends Application {
     /*################################
      * Primary Properties
      *###############################*/
-
-    /**
-     * A reference to ourself.
-     */
-    static Display display;
 
     /**
      * A reference to the room our fridge and freezer are in.
@@ -105,26 +102,12 @@ public class GUIDisplay extends Application implements Display {
     /*################################
      * JavaFX Properties
      *###############################*/
-
-    private static Button bSetRoomTemp;
-    private static Button bSetFridgeTemp;
-    private static Button bSetFreezerTemp;
-    private static Button bFridgeDoorToggle;
-    private static Button bFreezerDoorToggle;
-    private static Label lFridgeTemp;
-    private static Label lFreezerTemp;
-    private static Label lStatus;
-    private static Label lFridgeLightStatus;
-    private static Label lFreezerLightStatus;
-    private static Label lFridgeTempStatus;
-    private static Label lFreezerTempStatus;
-    private static Label lRoomTemp;
-    private static Label lFridgeCoolingStatus;
-    private static Label lFreezerCoolingStatus;
     private static TextField tRoomTemp;
     private static TextField tFridgeTemp;
     private static TextField tFreezerTemp;
 
+    private static ConfigurationMap<String, Label> labels;
+    private static ConfigurationMap<String, Button> buttons;
 
 
 
@@ -138,22 +121,49 @@ public class GUIDisplay extends Application implements Display {
      * @param primaryStage Set by JavaFx.
      */
 	public void start(Stage primaryStage) {
+	    labels = new ConfigurationMap<>(
+                new String[] {
+                        "lFridgeTemp",
+                        "lFreezerTemp",
+                        "lFridgeLightStatus",
+                        "lFreezerLightStatus",
+                        "lFridgeTempStatus",
+                        "lFreezerTempStatus",
+                        "lFridgeCoolingStatus",
+                        "lFreezerCoolingStatus",
+                        "lRoomTemp"
+                },
+                new Label[] {
+                        new Label("Desired fridge temp"),
+                        new Label("Desired freezer temp"),
+                        new Label("Fridge light: "),
+                        new Label("Freezer light: "),
+                        new Label("Fridge temp: : "),
+                        new Label("Freezer temp: "),
+                        new Label("Fridge status: : "),
+                        new Label("Freezer status: "),
+                        new Label("Room temp: "),
+                }
+        );
+
+	    buttons = new ConfigurationMap<>(
+	            new String[] {
+	                    "bSetRoomTemp",
+                        "bSetFridgeTemp",
+                        "bSetFreezerTemp",
+                        "bFridgeDoorToggle",
+                        "bFreezerDoorToggle"
+                },
+                new Button[] {
+                        new Button("Set room temp"),
+                        new Button("Set desired fridge temp"),
+                        new Button("Set desired freezer temp"),
+                        new Button("Open fridge door"),
+                        new Button("Open freezer door")
+                }
+        );
+
 	    /* Initialise all static display elements. */
-        bSetRoomTemp = new Button("Set room temp");
-        bSetFridgeTemp = new Button("Set desired fridge temp");
-        bSetFreezerTemp = new Button("Set desired freezer temp");
-        bFridgeDoorToggle = new Button("Open fridge door");
-        bFreezerDoorToggle = new Button("Open freezer door");
-        lFridgeTemp = new Label("Desired fridge temp");
-        lFreezerTemp = new Label("Desired freezer temp");
-        lStatus = new Label("Status");
-        lFridgeLightStatus = new Label("Fridge light: Off");
-        lFreezerLightStatus = new Label("Freezer light: Off");
-        lFridgeTempStatus = new Label();
-        lFreezerTempStatus = new Label();
-        lRoomTemp = new Label();
-        lFridgeCoolingStatus = new Label("Fridge cooling: ");
-        lFreezerCoolingStatus = new Label("Freezer cooling: ");
         tRoomTemp = new TextField();
         tFridgeTemp = new TextField();
         tFreezerTemp = new TextField();
@@ -170,13 +180,21 @@ public class GUIDisplay extends Application implements Display {
 
         // Stores the config frame, composed of the labels and buttons for setting certain configuration at run-time.
         VBox configFrame = new VBox(10);
-        configFrame.getChildren().add((new HBox(5, tRoomTemp, bSetRoomTemp)));
-        configFrame.getChildren().add((new HBox(5, tFridgeTemp, bSetFridgeTemp)));
-        configFrame.getChildren().add((new HBox(5, tFreezerTemp, bSetFreezerTemp)));
+        configFrame.getChildren().add((new HBox(5, tRoomTemp, buttons.get("bSetRoomTemp"))));
+        configFrame.getChildren().add((new HBox(5, tFridgeTemp, buttons.get("bSetFridgeTemp"))));
+        configFrame.getChildren().add((new HBox(5, tFreezerTemp, buttons.get("bSetFreezerTemp"))));
 
         // Stores the status frame, composed of status labels for temperature, etc.
         VBox statusFrame = new VBox(10);
-        statusFrame.getChildren().addAll(lFridgeCoolingStatus, lFridgeTempStatus, lFreezerCoolingStatus, lFreezerTempStatus, lRoomTemp);
+        statusFrame.getChildren().addAll(
+                labels.get("lFridgeCoolingStatus"),
+                labels.get("lFridgeTempStatus"),
+                labels.get("lFridgeLightStatus"),
+                labels.get("lFreezerCoolingStatus"),
+                labels.get("lFreezerTempStatus"),
+                labels.get("lFreezerLightStatus"),
+                labels.get("lRoomTemp")
+        );
         statusFrame.setMinWidth(200); // Should keep things long enough to prevent resizes when "Idle" switches to "Active"
 
         // Add the status, config frames to main frame.
@@ -185,7 +203,7 @@ public class GUIDisplay extends Application implements Display {
 
         // Stores general button actions for opening/closing fridge and freezer
         HBox buttonFrame = new HBox(25);
-        buttonFrame.getChildren().addAll(bFreezerDoorToggle, bFridgeDoorToggle);
+        buttonFrame.getChildren().addAll(buttons.get("bFreezerDoorToggle"), buttons.get("bFridgeDoorToggle"));
 
 
         // Add main frame, button frame to overall frame.
@@ -209,7 +227,7 @@ public class GUIDisplay extends Application implements Display {
 
         /* Action Listeners */
         // Room Temperature Change
-        bSetRoomTemp.setOnAction((event) -> {
+        buttons.get("bSetRoomTemp").setOnAction((event) -> {
             int value = Integer.parseInt(tRoomTemp.getText());
 
             if (value > config.get("RoomHigh")) {
@@ -224,7 +242,7 @@ public class GUIDisplay extends Application implements Display {
         });
 
         // Freezer Target Temperature Change
-        bSetFreezerTemp.setOnAction((event) -> {
+        buttons.get("bSetFreezerTemp").setOnAction((event) -> {
             int value = Integer.parseInt(tFreezerTemp.getText());
 
             if (value > config.get("FreezerHigh")) {
@@ -239,7 +257,7 @@ public class GUIDisplay extends Application implements Display {
         });
 
         // Fridge Target Temperature Change
-        bSetFridgeTemp.setOnAction((event) -> {
+        buttons.get("bSetFridgeTemp").setOnAction((event) -> {
             int value = Integer.parseInt(tFridgeTemp.getText());
 
             if (value > config.get("FridgeHigh")) {
@@ -254,8 +272,8 @@ public class GUIDisplay extends Application implements Display {
         });
 
         // Open/Close Door
-        bFridgeDoorToggle.setOnAction(new ButtonHandler());
-        bFreezerDoorToggle.setOnAction(new ButtonHandler());
+        buttons.get("bFridgeDoorToggle").setOnAction(new ButtonHandler());
+        buttons.get("bFreezerDoorToggle").setOnAction(new ButtonHandler());
 
 
 
@@ -276,10 +294,10 @@ public class GUIDisplay extends Application implements Display {
      */
     class ButtonHandler implements EventHandler<ActionEvent> {
         public void handle(ActionEvent event) {
-            if (event.getSource().equals(bFridgeDoorToggle)) {
+            if (event.getSource().equals(buttons.get("bFridgeDoorToggle"))) {
                 fridge.processEvent(CoolerContext.Events.DOOR_TOGGLE_EVENT);
             }
-            else if (event.getSource().equals(bFreezerDoorToggle)) {
+            else if (event.getSource().equals(buttons.get("bFreezerDoorToggle"))) {
                 freezer.processEvent(CoolerContext.Events.DOOR_TOGGLE_EVENT);
             }
         }
@@ -297,7 +315,7 @@ public class GUIDisplay extends Application implements Display {
      *
      * @param text The text to display.
      */
-    public void alert(String text) {
+    public static void alert(String text) {
         Label label = new Label(text);
         label.setWrapText(true);
 
@@ -305,167 +323,6 @@ public class GUIDisplay extends Application implements Display {
         dialog.setHeaderText("Error");
         dialog.getDialogPane().setContent(label);
         dialog.showAndWait();
-    }
-
-
-
-
-    /*################################
-     * Display Functions for Two Coolers
-     *###############################*/
-
-	/**
-	 * Indicate that the light is on
-	 */
-	private void fridgeOpened() {
-        Platform.runLater(new Runnable() {
-            public void run() {
-                bFridgeDoorToggle.setText("Close fridge door");
-                lFridgeLightStatus.setText("Fridge light: On");
-            }
-        });
-	}
-
-	/**
-	 * Indicate that the light is off
-	 */
-	private void fridgeClosed() {
-        Platform.runLater(new Runnable() {
-            public void run() {
-                bFridgeDoorToggle.setText("Open fridge door");
-                lFridgeLightStatus.setText("Fridge light: Off");
-            }
-        });
-	}
-	
-	/**
-	 * Indicate that the light is on
-	 */
-	private void freezerOpened() {
-        Platform.runLater(new Runnable() {
-            public void run() {
-                bFreezerDoorToggle.setText("Close freezer door");
-                lFreezerLightStatus.setText("Freezer light: On");
-            }
-        });
-	}
-
-	/**
-	 * Indicate that the light is off
-	 */
-	private void freezerClosed() {
-        Platform.runLater(new Runnable() {
-            public void run() {
-                bFreezerDoorToggle.setText("Open freezer door");
-                lFreezerLightStatus.setText("Freezer light: Off");
-            }
-        });
-	}
-	
-	/**
-	 * Indicate that the cooling is on
-	 */
-	private void turnFridgeCoolingOn() {
-        Platform.runLater(new Runnable() {
-            public void run() {
-                lFridgeCoolingStatus.setText("Fridge cooling: Active");
-            }
-        });
-	}
-
-	/**
-	 * Indicate that the cooling is off
-	 */
-	private void turnFridgeCoolingOff() {
-        Platform.runLater(new Runnable() {
-            public void run() {
-                lFridgeCoolingStatus.setText("Fridge cooling: Idle");
-            }
-        });
-	}
-	
-	/**
-	 * Indicate that the cooling is on
-	 */
-	private void turnFreezerCoolingOn() {
-        Platform.runLater(new Runnable() {
-            public void run() {
-                lFreezerCoolingStatus.setText("Freezer cooling: Active");
-            }
-        });
-	}
-
-	/**
-	 * Indicate that the cooling is off
-	 */
-	private void turnFreezerCoolingOff() {
-        Platform.runLater(new Runnable() {
-            public void run() {
-                lFreezerCoolingStatus.setText("Freezer cooling: Idle");
-            }
-        });
-	}
-
-
-
-
-    /*################################
-     * Display Functions for Arbitrary Coolers, from Display Interface
-     * NOTE: the use of "==" instead of "equals()" is correct here. We are comparing references, not values.
-     *###############################*/
-
-	public void coolerOpened(CoolerContext context) {
-	    if (context == fridge) {
-	        fridgeOpened();
-        }
-        else if (context == freezer) {
-	        freezerOpened();
-        }
-        else {
-	        // TODO: error
-        }
-    }
-
-    public void coolerClosed(CoolerContext context) {
-        if (context == fridge) {
-            fridgeClosed();
-        }
-        else if (context == freezer) {
-            freezerClosed();
-        }
-        else {
-            // TODO: error
-        }
-    }
-
-    /**
-     * Unused; dynamic binding on {@link CoolerContext#coolerTempProperty()} is used instead.
-     */
-    public void displayTemp(CoolerContext context) {
-    }
-
-    public void turnCoolingOn(CoolerContext context) {
-        if (context == fridge) {
-            turnFridgeCoolingOn();
-        }
-        else if (context == freezer) {
-            turnFreezerCoolingOn();
-        }
-        else {
-            // TODO: error
-        }
-    }
-
-    public void turnCoolingOff(CoolerContext context) {
-        if (context == fridge) {
-            turnFridgeCoolingOff();
-        }
-        else if (context == freezer) {
-            turnFreezerCoolingOff();
-        }
-        else {
-            // TODO: error
-        }
     }
 
 
@@ -478,15 +335,12 @@ public class GUIDisplay extends Application implements Display {
      * Constructs the fridge, freezer, room, and display references.
      */
 	public static void startSimulation() {
-        display = new GUIDisplay();
-
         // Initialise Room Context
         roomContext = new RoomContext((config.get("RoomHigh") + config.get("RoomLow")) / 2);
-        lRoomTemp.setText("Room temperature: " + roomContext.getRoomTemp());
+        labels.get("lRoomTemp").setText("Room temperature: " + roomContext.getRoomTemp());
 
         // Initialise Fridge
         fridge = new CoolerContext(
-                display, // Associate our display.
                 roomContext, // Associate our room context.
                 roomContext.getRoomTemp(), // Set the fridge's current temperature to the current room temperature (which is probably right when you're first turning it on)
                 (config.get("FridgeHigh") + config.get("FridgeLow")) / 2, // Set the fridge's default target temperature to the average of it's maximum and minimum (which seems reasonable)
@@ -497,25 +351,46 @@ public class GUIDisplay extends Application implements Display {
         );
 
         // Initialise Freezer
-        freezer = new CoolerContext(display, roomContext, roomContext.getRoomTemp(), (config.get("FreezerH" +
+        freezer = new CoolerContext(roomContext, roomContext.getRoomTemp(), (config.get("FreezerH" +
                 "igh") + config.get("FreezerLow")) / 2, config.get("FreezerCompressorStartDiff"), config.get("FreezerCoolRate"), config.get("FreezerRateLossDoorOpen"), config.get("FreezerRateLossDoorClosed"));
 
         // Listeners for room, fridge, and freezer temp changes
         roomContext.roomTempProperty().addListener((obs, oldValue, newValue) ->
-                Platform.runLater(() -> lRoomTemp.setText("Room temperature: " + newValue)));
+                Platform.runLater(() -> labels.get("lRoomTemp").setText("Room temperature: " + newValue)));
 
-        fridge.coolerTempProperty().addListener((obs, oldValue, newValue) ->
-            Platform.runLater(() -> {
-                lFridgeTempStatus.setText("Fridge temperature: " + newValue);
-                lFridgeTempStatus.setTextFill((int) newValue > config.get("FridgeHigh") ? Color.RED : Color.BLACK);
-            })
-        );
+        Map<String, CoolerContext> coolerSet = new HashMap<>();
+        coolerSet.put("Freezer", freezer);
+        coolerSet.put("Fridge", fridge);
 
-        freezer.coolerTempProperty().addListener((obs, oldValue, newValue) ->
-            Platform.runLater(() -> {
-                lFreezerTempStatus.setText("Freezer temperature: " + newValue);
-                lFreezerTempStatus.setTextFill((int) newValue > config.get("FreezerHigh") ? Color.RED : Color.BLACK);
-            })
-        );
+        for (Map.Entry<String, CoolerContext> entry : coolerSet.entrySet()) {
+            entry.getValue().coolerTempProperty().addListener((obs, oldValue, newValue) ->
+                Platform.runLater(() -> {
+                    labels.get("l" + entry.getKey() + "TempStatus").setText(entry.getKey() + " temperature: " + newValue);
+                    labels.get("l" + entry.getKey() + "TempStatus").setTextFill((int) newValue > config.get(entry.getKey() + "High") ? Color.RED : Color.BLACK);
+                })
+            );
+
+            entry.getValue().getCoolingStrategy().isCoolingProperty().addListener((obs, oldValue, newValue) ->
+                Platform.runLater(() -> {
+                    labels.get("l" + entry.getKey() + "CoolingStatus").setText(entry.getKey() + " status: " + (newValue ? "Active" : "Idle"));
+                })
+            );
+
+            entry.getValue().currentStateProperty().addListener((obs, oldValue, newValue) ->
+                Platform.runLater(() -> {
+                    if (newValue.getClass().getName().equals("CoolerDoorOpenedState")) {
+                        buttons.get("b" + entry.getKey() + "DoorToggle").setText("Close " + entry.getKey().toLowerCase() + " door");
+                    }
+                    else if (newValue.getClass().getName().equals("CoolerDoorClosedState")) {
+                        buttons.get("b" + entry.getKey() + "DoorToggle").setText("Open " + entry.getKey().toLowerCase() + " door");
+                    }
+                    else {
+                        alert("Unknown cooler state.");
+                    }
+
+                    labels.get("l" + entry.getKey() + "LightStatus").setText(entry.getKey() + " light: " + (newValue.isLightOn() ? "On" : "Off"));
+                })
+            );
+        }
     }
 }
