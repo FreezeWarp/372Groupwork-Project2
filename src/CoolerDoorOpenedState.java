@@ -10,11 +10,9 @@ public class CoolerDoorOpenedState extends CoolerState {
         return coolerContext.getCoolerLossRateOpen();
     }
 
-    public void handle(Object event) {
-        super.handle(event);
-
-        if (event.equals(CoolerContext.Events.DOOR_CLOSED_EVENT) || event.equals(CoolerContext.Events.DOOR_TOGGLE_EVENT)) {
-            processDoorClose();
+    public void handle(Object arg) {
+        if (arg.equals(CoolerContext.Events.DOOR_CLOSED_EVENT) || arg.equals(CoolerContext.Events.DOOR_TOGGLE_EVENT)) {
+            coolerContext.changeCurrentState(coolerContext.getDoorClosedIdleState());
         }
     }
 
@@ -27,5 +25,10 @@ public class CoolerDoorOpenedState extends CoolerState {
      */
     @Override
     public void run() {
+        setChanged();
+        notifyObservers(Events.COMPRESSOR_DEACTIVATED);
+
+        setChanged();
+        notifyObservers(Events.DOOR_OPENED);
     }
 }

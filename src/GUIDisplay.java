@@ -396,7 +396,7 @@ public class GUIDisplay extends Application {
                     if (newValue.getClass().getName().equals("CoolerDoorOpenedState")) {
                         buttons.get("b" + entry.getKey() + "DoorToggle").setText("Close " + entry.getKey().toLowerCase() + " door");
                     }
-                    else if (newValue.getClass().getName().equals("CoolerDoorClosedState")) {
+                    else if (newValue.getClass().getName().equals("CoolerDoorClosedIdleState") || newValue.getClass().getName().equals("CoolerDoorClosedActiveState")) {
                         buttons.get("b" + entry.getKey() + "DoorToggle").setText("Open " + entry.getKey().toLowerCase() + " door");
                     }
                     else {

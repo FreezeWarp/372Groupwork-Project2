@@ -9,4 +9,5 @@ public interface CoolingStrategy {
     public void stopCooling();
     public boolean isCooling();
     public BooleanProperty isCoolingProperty();
+    public void handle(Object arg);
 }

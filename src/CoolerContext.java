@@ -26,9 +26,14 @@ public class CoolerContext implements Observer {
     private ObjectProperty<CoolerState> currentState = new SimpleObjectProperty<CoolerState>();
 
     /**
-     * The cooler's door-closed state.
+     * The cooler's door-closed, idle state.
      */
-    private CoolerDoorClosedState doorClosedState;
+    private CoolerDoorClosedIdleState doorClosedIdleState;
+
+    /**
+     * The cooler's door-closed, active state.
+     */
+    private CoolerDoorClosedActiveState doorClosedActiveState;
 
     /**
      * The cooler's door-opened state.
@@ -68,21 +73,25 @@ public class CoolerContext implements Observer {
     /**
      * The strategy used for cooling.
      */
-    private CoolingStrategy coolingStrategy;
+    private ObservableCoolingStrategy coolingStrategy;
 
 
 
     public CoolerContext(RoomContext roomContext) {
         this.roomContext = roomContext;
 
-        this.doorClosedState = new CoolerDoorClosedState(this);
+        this.doorClosedIdleState = new CoolerDoorClosedIdleState(this);
+        this.doorClosedActiveState = new CoolerDoorClosedActiveState(this);
         this.doorOpenedState = new CoolerDoorOpenedState(this);
 
-        this.changeCurrentState(doorClosedState);
+        this.coolingStrategy = new DefaultCoolingStrategy(this);
 
-        this.coolingStrategy = new DefaultCoolingStrategy(this, Timer.instance());
+        this.changeCurrentState(doorClosedIdleState);
 
-        Timer.instance().addObserver(this);
+        coolingStrategy.addObserver(this); // Get informed of compressor events.
+        Timer.instance().addObserver(this); // Get informed of ticks.
+
+        // (we get informed of state events in changeState())
     }
 
     public CoolerContext(RoomContext roomContext, int initialTemp, int targetTemp, int compressorStartDiff, int coolRate, int lossRateOpen, int lossRateClosed) {
@@ -98,38 +107,44 @@ public class CoolerContext implements Observer {
 
 
     /**
-     * For observer
+     * Called whenever an observable sends an event. We simply forward our events to {@link CoolerContext#processEvent(Object)}.
      *
-     * @param observable
-     *            will be the clock
-     * @param arg
-     *            the event that clock has ticked
+     * @param observable The object whose event has been sent.
+     * @param arg The event itself.
      */
     @Override
     public void update(Observable observable, Object arg) {
-        currentState.get().handle(arg);
+        processEvent(arg);
     }
 
     /**
-     * handle one of the several other events such as door close
+     * Invoke an event on CoolerContext.
+     * In-fact, we delegate all events we receive to the *current* cooling strategy and the *current* state.
+     * (The alternative is to have them directly observing, but this would require additional set-up whenever a state or cooling strategy changes, and would arguably increasing coupling to an undesirable degree.)
      *
-     * @param arg
-     *            the event from the GUI
+     * @param event The event from the GUI
      */
-    public void processEvent(Object arg) {
-        currentState.get().handle(arg);
+    public void processEvent(Object event) {
+        getCurrentState().handle(event); // Notify the current state of all events we receive, except events it sent.
+        getCoolingStrategy().handle(event); // Notify the current cooling strategy of all events we receive, except events it sent.
     }
 
     /**
-     * Called from the states to change the current state
+     * Change our current state to a new one.
+     * This is typically invoked by the states themselves, after they receive an event (from the GUI or from the cooling strategy) to open or close a door, or start or stop the compressor.
      *
-     * @param nextState
-     *            the next state
+     * @param nextState The new state
      */
     public void changeCurrentState(CoolerState nextState) {
-        currentState.set(nextState);
-        nextState.run();
+        if (currentState.get() != null) { // We may be null at start of execution.
+            currentState.get().deleteObserver(this); // Stop being informed of events from the now-deactivated state. (It shouldn't be sending any anyway, but just in case.)
+        }
+
+        nextState.addObserver(this); // Get informed of all events from the new state.
+        currentState.set(nextState); // Change the state to the new one.
+        currentState.get().run(); // Run the new state.
     }
+
 
     /**
      * @return {@link CoolerContext#coolerTemp} as an integer
@@ -167,6 +182,7 @@ public class CoolerContext implements Observer {
         desiredCoolerTemp = temp;
     }
 
+
     /**
      * @return {@link CoolerContext#coolerLossRateOpen}
      */
@@ -180,6 +196,7 @@ public class CoolerContext implements Observer {
     public void setCoolerLossRateOpen(int rate) {
         coolerLossRateOpen = rate;
     }
+
 
     /**
      * @return {@link CoolerContext#coolerLossRateClose}
@@ -195,6 +212,7 @@ public class CoolerContext implements Observer {
         coolerLossRateClose = rate;
     }
 
+
     /**
      * @return {@link CoolerContext#coolerCoolRate}
      */
@@ -209,6 +227,7 @@ public class CoolerContext implements Observer {
         coolerCoolRate = rate;
     }
 
+
     /**
      * @return {@link CoolerContext#compressorStartDiff}
      */
@@ -219,12 +238,13 @@ public class CoolerContext implements Observer {
      */
     public void setCompressorStartDiff(int compressorStartDiff) { this.compressorStartDiff = compressorStartDiff; }
 
+
     /**
      * @return {@link CoolerContext#roomContext}
      */
     public RoomContext getRoomContext() { return roomContext; }
 
-    public CoolingStrategy getCoolingStrategy() {
+    public ObservableCoolingStrategy getCoolingStrategy() {
         return coolingStrategy;
     }
 
@@ -244,16 +264,23 @@ public class CoolerContext implements Observer {
     }
 
     /**
+     * @return {@link CoolerContext#doorClosedIdleState}
+     */
+    public CoolerDoorClosedIdleState getDoorClosedIdleState() {
+        return doorClosedIdleState;
+    }
+
+    /**
+     * @return {@link CoolerContext#doorClosedActiveState}
+     */
+    public CoolerDoorClosedActiveState getDoorClosedActiveState() {
+        return doorClosedActiveState;
+    }
+
+    /**
      * @return {@link CoolerContext#doorOpenedState}
      */
     public CoolerDoorOpenedState getDoorOpenedState() {
         return doorOpenedState;
-    }
-
-    /**
-     * @return {@link CoolerContext#doorClosedState}
-     */
-    public CoolerDoorClosedState getDoorClosedState() {
-        return doorClosedState;
     }
 }
