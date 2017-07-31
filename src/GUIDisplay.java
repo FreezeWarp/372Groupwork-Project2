@@ -380,8 +380,8 @@ public class GUIDisplay extends Application {
         for (Map.Entry<String, CoolerContext> entry : coolerSet.entrySet()) {
             entry.getValue().coolerTempProperty().addListener((obs, oldValue, newValue) ->
                 Platform.runLater(() -> {
-                    labels.get("l" + entry.getKey() + "TempStatus").setText(entry.getKey() + " temperature: " + newValue);
-                    labels.get("l" + entry.getKey() + "TempStatus").setTextFill((int) newValue > config.get(entry.getKey() + "High") ? Color.RED : Color.BLACK);
+                    labels.get("l" + entry.getKey() + "TempStatus").setText(entry.getKey() + " temperature: " + newValue.intValue());
+                    labels.get("l" + entry.getKey() + "TempStatus").setTextFill(newValue.intValue() > config.get(entry.getKey() + "High") ? Color.RED : Color.BLACK);
                 })
             );
 

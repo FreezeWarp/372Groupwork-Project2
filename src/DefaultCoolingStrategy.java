@@ -65,13 +65,6 @@ public class DefaultCoolingStrategy extends ObservableCoolingStrategy {
      * This method is called when we receive a Timer.Events.CLOCK_TICKED_EVENT from {@link DefaultCoolingStrategy#handle(Object)}.
      */
     public void processTimerTick() {
-        // Increment the loss time from normal running, unless the fridge is at the room temperature.
-        // (Notably, this is still imperfect: the fridge would approach room temperature asymptotically, not linearly.)
-        if (coolerContext.getCoolerTemp() < coolerContext.getRoomContext().getRoomTemp()) {
-            lossTime++;
-        }
-
-
         // Start/Stop Cooling When Needed
         if (coolerContext.getCoolerTemp() >= coolerContext.getDesiredCoolerTemp() + coolerContext.getCompressorStartDiff()) { // Start the cooler once the temperature exceeds our desired temperature plus the compressor start diff.
             setChanged();
@@ -85,19 +78,14 @@ public class DefaultCoolingStrategy extends ObservableCoolingStrategy {
 
         // Process Temperature Change from Cooling
         if (isCooling()) {
-            coolTime++;
-            while (coolTime >= coolerContext.getCoolerCoolRate()) {
-                coolerContext.setCoolerTemp(coolerContext.getCoolerTemp() - 1);
-                coolTime -= coolerContext.getCoolerCoolRate();
-            }
+            coolerContext.setCoolerTemp(coolerContext.getCoolerTemp() - (1 / (double) coolerContext.getCoolerCoolRate()));
         }
 
 
         // Process Temperature Change from Natural Loss
-        while (lossTime >= coolerContext.getCurrentState().getCoolerLossRate()) {
-            coolerContext.setCoolerTemp(coolerContext.getCoolerTemp() + 1);
-            lossTime -= coolerContext.getCurrentState().getCoolerLossRate();
-        }
+        coolerContext.setCoolerTemp(coolerContext.getCoolerTemp() + (
+            ((double) coolerContext.getRoomContext().getRoomTemp() - coolerContext.getCoolerTemp()) / Math.pow(coolerContext.getCurrentState().getCoolerLossRate() * 4, 2) // A rough approximation for loss. Basically, the difference between the outside temperature and the inside temperature divided by (four times the loss rate) squared (four times to be better inline with the instructor-provided defaults; 1 and 2 are far too low for this to work). For instance, if it's 120 outside, and we're targeting 40, and our loss rate is 2, we lose 80/64 = 10/8 degrees every tick. If our loss rate is 1, we lose 80/16 = 10/2 degrees every tick.
+        ));
     }
 
 

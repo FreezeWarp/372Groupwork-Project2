@@ -23,7 +23,6 @@ public class CoolerDoorOpenedState extends CoolerState {
     /**
      * Initialize the state
      */
-    @Override
     public void run() {
         setChanged();
         notifyObservers(Events.COMPRESSOR_DEACTIVATED);
