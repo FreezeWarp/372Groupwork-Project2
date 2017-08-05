@@ -1,5 +1,26 @@
 @startuml
-
 Actor User
 
+activate ":GUIDisplay" 
+User -> ":GUIDisplay" : Open door
+
+":GUIDisplay" -> ":CoolerContext": processEvent(DoorOpenEvent)
+
+":CoolerContext" -> ":CoolerState": getCurrentState().handle(DoorOpenEvent)
+activate ":CoolerState" 
+":CoolerState" -->> ":CoolerContext": Success?
+deactivate ":CoolerState" 
+
+
+":CoolerContext" -> ":CoolerState": getCoolingStrategy().handle(DoorOpenEvent)
+activate ":CoolerState" 
+":CoolerState" -->> ":CoolerContext": Success?
+deactivate ":CoolerState" 
+
+
+
+":CoolerContext" -->> ":GUIDisplay" : Successful?
+deactivate ":CoolerContext"
+":GUIDisplay" -->> User : Successful?
+deactivate ":GUIDisplay"
 @enduml
