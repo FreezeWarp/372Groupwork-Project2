@@ -13,10 +13,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,26 +75,40 @@ public class GUIDisplay extends Application {
      */
     public static void main(String[] args) {
         if (args.length > 0) {
-            Path filePath = Paths.get(args[0]);
+            File file = new File(args[0]);
 
-            System.out.println("Attempting to use " + filePath.toAbsolutePath() + " as configuration file.");
-            if (!Files.exists(filePath)) {
-                System.err.println("Could not use " + filePath.toAbsolutePath() + " as configuration file. The file does not exist.");
+            System.out.println("Attempting to use " + file.getAbsolutePath() + " as configuration file.");
+            if (!file.exists() || !file.canRead()) {
+                System.err.println("Could not use " + file.getAbsolutePath() + " as configuration file. The file does not exist.");
             }
             else {
                 try {
-                    Files.lines(filePath).forEach((line) -> {
-                        String[] lineParts = line.split("=");
-                        try {
-                            config.put(lineParts[0].trim(), Integer.parseInt(lineParts[1].trim()));
-                        } catch (NoKeyException exception) {
-                            System.err.println("Config value is not recgonised: " + lineParts[0]);
-                        } catch (Exception exceptiopn) {
-                            System.err.println("Could not parse config value: " + lineParts[0] + "=" + lineParts[1]);
+                    Files.lines(file.toPath()).forEach((line) -> {
+                        if (line.length() == 0) {
+                            // Do nothing for empty lines.
+                        }
+                        else if (line.startsWith(";")) {
+                            // Do nothing for comment lines.
+                        }
+                        else if (line.startsWith("#")) {
+                            // Do nothing for comment lines.
+                        }
+                        else if (line.contains("=")) {
+                            String[] lineParts = line.split("=");
+                            try {
+                                config.put(lineParts[0].trim(), Integer.parseInt(lineParts[1].trim()));
+                            } catch (NoKeyException exception) {
+                                System.err.println("Config value is not recognised: " + lineParts[0]);
+                            } catch (Exception exceptiopn) {
+                                System.err.println("Could not parse config value: " + lineParts[0] + "=" + lineParts[1]);
+                            }
+                        }
+                        else {
+                            System.err.println("Line does not contain '=' seperator. Skipping.");
                         }
                     });
                 } catch (IOException exception) {
-                    System.err.println("Could not use " + filePath.toAbsolutePath() + " as configuration file. A file IO exception occured when reading it: " + exception);
+                    System.err.println("Could not use " + file.getAbsolutePath() + " as configuration file. A file IO exception occurred when reading it: " + exception);
                 }
             }
         }
