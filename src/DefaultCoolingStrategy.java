@@ -1,6 +1,3 @@
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-
 /**
  * A basic (and not necessarily physics-accurate) cooling strategy that adjusts the cooler strategy and sends events to turn the compressor on or off.
  * A much simpler real-world CoolingStrategy would be one that simply observes a thermometer every so often.
@@ -21,12 +18,12 @@ public class DefaultCoolingStrategy extends ObservableCoolingStrategy {
     /**
      * Whether or not we are currently cooling.
      */
-    private BooleanProperty isCooling = new SimpleBooleanProperty();
+    private boolean isCooling = false;
 
     /**
      * The cooler this cooling strategy is applied to.
      */
-    CoolerContext coolerContext;
+    private CoolerContext coolerContext;
 
 
     /**
@@ -65,7 +62,7 @@ public class DefaultCoolingStrategy extends ObservableCoolingStrategy {
      * Apply cooling for the period of a single tick.
      * This method is called when we receive a Timer.Events.CLOCK_TICKED_EVENT from {@link DefaultCoolingStrategy#handle(Object)}.
      */
-    public void processTimerTick() {
+    private void processTimerTick() {
         // Start/Stop Cooling When Needed
         if (coolerContext.getCoolerTemp() >= coolerContext.getDesiredCoolerTemp() + coolerContext.getCompressorStartDiff()) { // Start the cooler once the temperature exceeds our desired temperature plus the compressor start diff.
             setChanged();
@@ -94,8 +91,8 @@ public class DefaultCoolingStrategy extends ObservableCoolingStrategy {
      * Turn on cooling for future iterations of {@link DefaultCoolingStrategy#processTimerTick()}.
      * This method is called when we receive a CoolerState.Events.COOLING_ACTIVATED from {@link DefaultCoolingStrategy#handle(Object)}, which will typically happen after we send a ObservableCoolingStrategy.Events.COOLING_ACTIVATED event.
      */
-    public void startCooling() {
-        isCooling.set(true);
+    private void startCooling() {
+        isCooling = true;
     }
 
 
@@ -103,23 +100,15 @@ public class DefaultCoolingStrategy extends ObservableCoolingStrategy {
      * Turn off cooling for future iterations of {@link DefaultCoolingStrategy#processTimerTick()}.
      * This method is called when we receive a CoolerState.Events.COOLING_DEACTIVATED from {@link DefaultCoolingStrategy#handle(Object)}, which will typically happen after we send a ObservableCoolingStrategy.Events.COOLING_DEACTIVATED event.
      */
-    public void stopCooling() {
-        isCooling.set(false);
+    private void stopCooling() {
+        isCooling = false;
     }
 
 
     /**
      * @return {@link DefaultCoolingStrategy#isCooling} as a boolean.
      */
-    public boolean isCooling() {
-        return isCooling.get();
-    }
-
-
-    /**
-     * @return {@link DefaultCoolingStrategy#isCooling} as a property.
-     */
-    public BooleanProperty isCoolingProperty() {
+    private boolean isCooling() {
         return isCooling;
     }
 }

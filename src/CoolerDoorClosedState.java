@@ -3,15 +3,18 @@
  */
 public abstract class CoolerDoorClosedState extends CoolerState {
     /**
-     * {@link CoolerState#lightOn}
-     */
-    protected boolean lightOn;
-
-    /**
      * {@link CoolerState#getCoolerLossRate()}
      */
     public int getCoolerLossRate() {
         return coolerContext.getCoolerLossRateClose();
+    }
+
+
+    /**
+     * @return {@link CoolerState#isLightOn()}
+     */
+    public boolean isLightOn() {
+        return false;
     }
 
     /**

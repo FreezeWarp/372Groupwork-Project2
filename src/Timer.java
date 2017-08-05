@@ -17,7 +17,7 @@ public class Timer extends Observable implements Runnable {
 	/**
 	 * The number of milliseconds between ticks.
 	 */
-	private static final int tickInterval = 1000;
+	private static final int tickInterval = 50;
 
 
 	/**

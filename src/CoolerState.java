@@ -34,16 +34,6 @@ public abstract class CoolerState extends Observable {
      */
     protected CoolerContext coolerContext;
 
-    /**
-     * True if the Cooler light should be turned on in this state, false otherwise.
-     */
-    protected boolean lightOn;
-
-
-    /**
-     * Initializes the state.
-     */
-    public abstract void run();
 
     /**
      * @return How quickly the cooler warms in this state.
@@ -51,11 +41,20 @@ public abstract class CoolerState extends Observable {
     public abstract int getCoolerLossRate();
 
     /**
-     * @return {@link CoolerState#lightOn}
+     * True if the light is on in the current state, false otherwise.
      */
-    public boolean isLightOn() {
-        return lightOn;
-    }
+    public abstract boolean isLightOn();
+
+    /**
+     * True if the compressor is cooling in the current state, false otherwise.
+     */
+    public abstract boolean isCooling();
+
+
+    /**
+     * Initializes the state.
+     */
+    public abstract void run();
 
     /**
      * Process events.

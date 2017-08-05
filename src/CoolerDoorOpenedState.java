@@ -11,10 +11,20 @@ public class CoolerDoorOpenedState extends CoolerState {
         this.coolerContext = coolerContext;
     }
 
+
     /**
-     * {@link CoolerState#lightOn}
+     * @return {@link CoolerState#isLightOn()}
      */
-    protected boolean lightOn = false;
+    public boolean isLightOn() {
+        return true;
+    }
+
+    /**
+     * @return {@link CoolerState#isCooling()}
+     */
+    public boolean isCooling() {
+        return false;
+    }
 
     /**
      * {@link CoolerState#getCoolerLossRate()}
@@ -22,6 +32,7 @@ public class CoolerDoorOpenedState extends CoolerState {
     public int getCoolerLossRate() {
         return coolerContext.getCoolerLossRateOpen();
     }
+
 
     /**
      * Handle events.

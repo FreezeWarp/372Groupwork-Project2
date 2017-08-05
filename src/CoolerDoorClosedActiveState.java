@@ -11,6 +11,15 @@ public class CoolerDoorClosedActiveState extends CoolerDoorClosedState {
         this.coolerContext = coolerContext;
     }
 
+
+    /**
+     * @return {@link CoolerState#isCooling()}
+     */
+    public boolean isCooling() {
+        return true;
+    }
+
+
     /**
      * Handle events.
      * @param arg Event to process.

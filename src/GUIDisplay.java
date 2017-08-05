@@ -384,16 +384,10 @@ public class GUIDisplay extends Application {
                 })
             );
 
-            // Fires when the cooler starts or stops cooling.
-            entry.getValue().getCoolingStrategy().isCoolingProperty().addListener((obs, oldValue, newValue) ->
-                Platform.runLater(() -> {
-                    labels.get("l" + entry.getKey() + "CoolingStatus").setText(entry.getKey() + " status: " + (newValue ? "Active" : "Idle"));
-                })
-            );
-
             // Fires when the cooler changes between DoorOpened and DoorClosed states.
             entry.getValue().currentStateProperty().addListener((obs, oldValue, newValue) ->
                 Platform.runLater(() -> {
+                    // Update the button text based on the current state.
                     if (newValue.getClass().getName().equals("CoolerDoorOpenedState")) {
                         buttons.get("b" + entry.getKey() + "DoorToggle").setText("Close " + entry.getKey().toLowerCase() + " door");
                     }
@@ -404,6 +398,10 @@ public class GUIDisplay extends Application {
                         alert("Unknown cooler state.");
                     }
 
+                    // Update the cooling status indicator.
+                    labels.get("l" + entry.getKey() + "CoolingStatus").setText(entry.getKey() + " status: " + (newValue.isCooling() ? "Active" : "Idle"));
+
+                    // Update the light status indicator.
                     labels.get("l" + entry.getKey() + "LightStatus").setText(entry.getKey() + " light: " + (newValue.isLightOn() ? "On" : "Off"));
                 })
             );
