@@ -3,10 +3,7 @@ Actor User
 
 activate ":GUIDisplay"
 User -> ":GUIDisplay" : Set cooler temperature
-User //- ":GUIDisplay": Data Request
-User -// ":GUIDisplay": coolerTemperature
 
-":GUIDisplay" -> ":ConfigurationMap" : get()
 ":GUIDisplay" -> ":ConfigurationMap" : coolerTemperature = Integer.parseInt(textfields.get("tFreezerTemp").getText())
 activate ":ConfigurationMap"
 ":ConfigurationMap" -->> ":GUIDisplay": Successful?
