@@ -2,7 +2,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 /**
- * Created by joseph on 26/07/17.
+ * A basic (and not necessarily physics-accurate) cooling strategy that adjusts the cooler strategy and sends events to turn the compressor on or off.
+ * A much simpler real-world CoolingStrategy would be one that simply observes a thermometer every so often.
  */
 public class DefaultCoolingStrategy extends ObservableCoolingStrategy {
     /**

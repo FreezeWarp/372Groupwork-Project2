@@ -1,11 +1,20 @@
 /**
- * Created by Joseph on 27/07/2017.
+ * A state for a Cooler when its door is closed and its compressor is active+.
  */
 public class CoolerDoorClosedActiveState extends CoolerDoorClosedState {
+    /**
+     * Create a new CoolerDoorClosedActiveState.
+     *
+     * @param coolerContext The coolerContext that created this instance.
+     */
     public CoolerDoorClosedActiveState(CoolerContext coolerContext) {
         this.coolerContext = coolerContext;
     }
 
+    /**
+     * Handle events.
+     * @param arg Event to process.
+     */
     public void handle(Object arg) {
         super.handle(arg);
 
@@ -14,6 +23,9 @@ public class CoolerDoorClosedActiveState extends CoolerDoorClosedState {
         }
     }
 
+    /**
+     * Initialize the state
+     */
     public void run() {
         super.run();
 

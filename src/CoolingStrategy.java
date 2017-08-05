@@ -1,7 +1,7 @@
 import javafx.beans.property.BooleanProperty;
 
 /**
- * Created by joseph on 26/07/17.
+ * Any cooling strategy that updates every so often and can receive timer events.
  */
 public interface CoolingStrategy {
     public void processTimerTick();

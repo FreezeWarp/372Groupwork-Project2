@@ -1,5 +1,5 @@
 /**
- * Created by joseph on 26/07/17.
+ * A basic exception that is fired when a dictionary lookup fails.
  */
 public class NoKeyException extends RuntimeException {
     public NoKeyException(Object key) {

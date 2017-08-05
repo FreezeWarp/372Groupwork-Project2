@@ -1,10 +1,21 @@
 import java.util.Observable;
 
 /**
- * Created by joseph on 31/07/17.
+ * A CoolingStrategy that is also observable and thus sends events.
  */
 public abstract class ObservableCoolingStrategy extends Observable implements CoolingStrategy {
+    /**
+     * Events sent from the cooling strategy.
+     */
     public enum Events {
-        COOLING_ACTIVATED, COOLING_DEACTIVATED
+        /**
+         * When cooling should be turned on.
+         */
+        COOLING_ACTIVATED,
+
+        /**
+         * When cooling should be turned off.
+         */
+        COOLING_DEACTIVATED
     };
 }

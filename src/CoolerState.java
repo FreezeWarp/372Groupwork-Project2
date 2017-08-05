@@ -1,12 +1,32 @@
 import java.util.Observable;
 
 /**
- * Created by joseph on 23/07/17.
+ * A state the cooler can be in.
  */
 public abstract class CoolerState extends Observable {
+    /**
+     * Events that can be fired from CoolerState,
+     */
     public enum Events {
-        DOOR_OPENED, DOOR_CLOSED,
-        COMPRESSOR_ACTIVATED, COMPRESSOR_DEACTIVATED
+        /**
+         * When the door is opened. This event is reflexive: the state changes to an open door state because of some other, external event, and then DOOR_OPENED is fired in acknowledgement.
+         */
+        DOOR_OPENED,
+
+        /**
+         * When the door is closed. This event is reflexive: the state changes to a closed door state because of some other, external event, and then DOOR_CLOSED is fired in acknowledgement.
+         */
+        DOOR_CLOSED,
+
+        /**
+         * When the compressor is activate. This event is reflexive: the state changes to a compressor active state because of some other, external event (typically from CoolingStrategy), and then COMPRESSOR_ACTIVATED is fired in acknowledgement.
+         */
+        COMPRESSOR_ACTIVATED,
+
+        /**
+         * When the compressor is deactivated. This event is reflexive: the state changes to a compressor idle state because of some other, external event (typically from CoolingStrategy), and then COMPRESSOR_DEACTIVATED is fired in acknowledgement.
+         */
+        COMPRESSOR_DEACTIVATED
     };
 
     /**
@@ -33,7 +53,9 @@ public abstract class CoolerState extends Observable {
     /**
      * @return {@link CoolerState#lightOn}
      */
-    public abstract boolean isLightOn();
+    public boolean isLightOn() {
+        return lightOn;
+    }
 
     /**
      * Process events.

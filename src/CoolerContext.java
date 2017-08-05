@@ -7,8 +7,23 @@ import java.util.Observer;
  * Created by joseph on 23/07/17.
  */
 public class CoolerContext implements Observer {
+    /**
+     * Events fired from CoolerContext.
+     */
     public enum Events {
-        DOOR_CLOSED_EVENT, DOOR_OPENED_EVENT,
+        /**
+         * The door closes.
+         */
+        DOOR_CLOSED_EVENT,
+
+        /**
+         * The door opens.
+         */
+        DOOR_OPENED_EVENT,
+
+        /**
+         * The door's state flips from its current.
+         */
         DOOR_TOGGLE_EVENT
     };
 
@@ -73,7 +88,11 @@ public class CoolerContext implements Observer {
     private ObservableCoolingStrategy coolingStrategy;
 
 
-
+    /**
+     * Create a CoolerContext
+     *
+     * @param roomContext The RoomContext the CoolerContext is within.
+     */
     public CoolerContext(RoomContext roomContext) {
         this.roomContext = roomContext;
 
@@ -91,6 +110,18 @@ public class CoolerContext implements Observer {
         // (we get informed of state events in changeState())
     }
 
+
+    /**
+     * Create a CoolerContext
+     *
+     * @param roomContext The RoomContext the CoolerContext is within.
+     * @param initialTemp The temperature the cooler should start at.
+     * @param targetTemp The temperature the cooler should target.
+     * @param compressorStartDiff The distance from the target temp before the cooler activates.
+     * @param coolRate The rate of cooling.
+     * @param lossRateOpen The rate of loss when the cooler's door is open.
+     * @param lossRateClosed The rate of loss when the cooler's door is closed.
+     */
     public CoolerContext(RoomContext roomContext, int initialTemp, int targetTemp, int compressorStartDiff, int coolRate, int lossRateOpen, int lossRateClosed) {
         this(roomContext);
 

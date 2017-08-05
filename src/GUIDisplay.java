@@ -20,16 +20,14 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-
-/*
- * Key Design Notes:
- * We are using JavaFX's listeners (using Properties) instead of custom listener classes. This is probably a good idea, because those methods exist for a reason and are becoming the default choice for GUIs in the Java world.
+/**
+ * A GUI interface to simulate two coolers, a refridgerator and freezer.
  *
- */
-
-/*
- * TODO:
- * Events for door close (fired from GUI), door open (fired from GUI), start cooling (fired from CoolingStrategy), and stop cooling (fired from CoolingStrategy). Have states listen for these methods.
+ * Key Design Notes:
+ ** We are using JavaFX's listeners (using Properties) instead of custom listener classes. This is probably a good idea, because those methods exist for a reason and are becoming the default choice for GUIs in the Java world. They work much like the Observer pattern.
+ ** CoolingStrategy and CoolerState both are observable, and fire events that the other expects to see. However, because CoolingStrategy could change (though doesn't in this implementation) and CoolingState does change, it is easier to use CoolerContext as a go-between facade for them. Thus, CoolerContext listens to events from both the current CoolingStrategy and current CoolingState, and forwards those events to CoolingStrategy and CoolingState.
+ *
+ * @author Eric Fulwiler, Daniel Johnson, Joseph T. Parsons, Cory Stadther
  */
 public class GUIDisplay extends Application {
     /*################################
@@ -55,7 +53,7 @@ public class GUIDisplay extends Application {
     /**
      * Our configuration data. Defaults will be overridden in {@link GUIDisplay#main(String[])} if possible.
      */
-    static ConfigurationMap<String, Integer> config = new ConfigurationMap<String, Integer>(
+    static StrongMap<String, Integer> config = new StrongMap<String, Integer>(
             new String[]{"FridgeLow", "FridgeHigh", "FreezerLow", "FreezerHigh", "RoomLow", "RoomHigh",
                     "FridgeRateLossDoorClosed", "FridgeRateLossDoorOpen", "FreezerRateLossDoorClosed", "FreezerRateLossDoorOpen",
                     "FridgeCompressorStartDiff", "FreezerCompressorStartDiff", "FridgeCoolRate", "FreezerCoolRate"},
@@ -112,9 +110,9 @@ public class GUIDisplay extends Application {
     /*################################
      * JavaFX Properties
      *###############################*/
-    private static ConfigurationMap<String, Label> labels;
-    private static ConfigurationMap<String, Button> buttons;
-    private static ConfigurationMap<String, TextField> textfields;
+    private static StrongMap<String, Label> labels;
+    private static StrongMap<String, Button> buttons;
+    private static StrongMap<String, TextField> textfields;
 
 
 
@@ -128,7 +126,7 @@ public class GUIDisplay extends Application {
      * @param primaryStage Set by JavaFx.
      */
 	public void start(Stage primaryStage) {
-	    labels = new ConfigurationMap<>(
+	    labels = new StrongMap<>(
                 new String[] {
                         "lFridgeTemp",
                         "lFreezerTemp",
@@ -153,7 +151,7 @@ public class GUIDisplay extends Application {
                 }
         );
 
-	    buttons = new ConfigurationMap<>(
+	    buttons = new StrongMap<>(
 	            new String[] {
 	                    "bSetRoomTemp",
                         "bSetFridgeTemp",
@@ -170,7 +168,7 @@ public class GUIDisplay extends Application {
                 }
         );
 
-        textfields = new ConfigurationMap<>(
+        textfields = new StrongMap<>(
                 new String[] {
                         "tRoomTemp",
                         "tFridgeTemp",
@@ -378,6 +376,7 @@ public class GUIDisplay extends Application {
         coolerSet.put("Fridge", fridge);
 
         for (Map.Entry<String, CoolerContext> entry : coolerSet.entrySet()) {
+            // Fires when the cooler's temperature changes.
             entry.getValue().coolerTempProperty().addListener((obs, oldValue, newValue) ->
                 Platform.runLater(() -> {
                     labels.get("l" + entry.getKey() + "TempStatus").setText(entry.getKey() + " temperature: " + newValue.intValue());
@@ -385,12 +384,14 @@ public class GUIDisplay extends Application {
                 })
             );
 
+            // Fires when the cooler starts or stops cooling.
             entry.getValue().getCoolingStrategy().isCoolingProperty().addListener((obs, oldValue, newValue) ->
                 Platform.runLater(() -> {
                     labels.get("l" + entry.getKey() + "CoolingStatus").setText(entry.getKey() + " status: " + (newValue ? "Active" : "Idle"));
                 })
             );
 
+            // Fires when the cooler changes between DoorOpened and DoorClosed states.
             entry.getValue().currentStateProperty().addListener((obs, oldValue, newValue) ->
                 Platform.runLater(() -> {
                     if (newValue.getClass().getName().equals("CoolerDoorOpenedState")) {
