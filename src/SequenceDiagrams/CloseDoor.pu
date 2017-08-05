@@ -1,0 +1,26 @@
+@startuml
+Actor User
+
+activate ":GUIDisplay" 
+User -> ":GUIDisplay" : Close door
+
+":GUIDisplay" -> ":CoolerContext": processEvent(CloseDoorEvent)
+
+":CoolerContext" -> ":CoolerState": getCurrentState().handle(CloseDoorEvent)
+activate ":CoolerState" 
+":CoolerState" -->> ":CoolerContext": Success?
+deactivate ":CoolerState" 
+
+
+":CoolerContext" -> ":CoolerState": getCoolingStrategy().handle(CloseDoorEvent)
+activate ":CoolerState" 
+":CoolerState" -->> ":CoolerContext": Success?
+deactivate ":CoolerState" 
+
+
+
+":CoolerContext" -->> ":GUIDisplay" : Successful?
+deactivate ":CoolerContext"
+":GUIDisplay" -->> User : Successful?
+deactivate ":GUIDisplay"
+@enduml

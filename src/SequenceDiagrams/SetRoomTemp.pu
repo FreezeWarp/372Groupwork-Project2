@@ -1,0 +1,19 @@
+@startuml
+Actor User
+
+activate ":GUIDisplay"
+User -> ":GUIDisplay" : Set room temperature
+
+":GUIDisplay" -> ":ConfigurationMap" : roomTemperature = Integer.parseInt(textfields.get("tRoomTemp").getText())
+activate ":ConfigurationMap"
+":ConfigurationMap" -->> ":GUIDisplay": Successful?
+deactivate ":ConfigurationMap"
+
+":GUIDisplay" -> ":RoomContext": setRoomTemp(roomTemperature)
+activate ":RoomContext"
+
+":RoomContext" -->> ":GUIDisplay" : Successful?
+deactivate ":RoomContext"
+":GUIDisplay" -->> User : Successful?
+deactivate ":GUIDisplay"
+@enduml
