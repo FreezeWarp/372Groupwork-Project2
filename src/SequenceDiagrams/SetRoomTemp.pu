@@ -1,0 +1,20 @@
+@startuml
+Actor User
+
+activate ":GUIDisplay"
+User -> ":GUIDisplay" : Set room temperature
+User //- ":GUIDisplay": Data Request
+User -// ":GUIDisplay": roomTemperature
+
+":GUIDisplay" -> ":ConfigurationMap" : get()
+activate ":ConfigurationMap"
+":ConfigurationMap" -->> ":GUIDisplay": Successful?
+deactivate ":ConfigurationMap"
+":GUIDisplay" -> ":RoomContext": setRoomTemp(roomTemperature)
+activate ":RoomContext"
+
+":RoomContext" -->> ":GUIDisplay" : Successful?
+deactivate ":RoomContext"
+":GUIDisplay" -->> User : Successful?
+deactivate ":GUIDisplay"
+@enduml
