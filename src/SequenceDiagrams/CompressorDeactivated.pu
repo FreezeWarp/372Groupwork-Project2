@@ -1,5 +1,19 @@
 @startuml
+Control Timer
 
-Actor User
+activate ":DefaultCoolingStrategy" 
+Timer -> ":DefaultCoolingStrategy" : processTimerTick()
 
+":DefaultCoolingStrategy" -> ":CoolerContext": getCoolerTemp()
+":CoolerContext" ->> ":DefaultCoolingStrategy": coolerTemp
+":DefaultCoolingStrategy" -> ":CoolerContext": getDesiredCoolerTemp()
+":CoolerContext" ->> ":DefaultCoolingStrategy": desiredTemp
+
+":DefaultCoolingStrategy" -> ":CoolerState": if (coolerTemp <= desiredTemp) getCurrentState().handle(COOLING_DEACTIVATED)
+
+":CoolerState" -->> ":CoolerContext": changeCurrentState(doorClosedIdleState)
+deactivate ":CoolerState" 
+
+":CoolerContext" -->> ":DefaultCoolingStrategy" : Successful?
+deactivate ":CoolerContext"
 @enduml
