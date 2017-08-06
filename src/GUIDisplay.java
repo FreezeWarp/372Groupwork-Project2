@@ -377,8 +377,15 @@ public class GUIDisplay extends Application {
         );
 
         // Initialise Freezer
-        freezer = new CoolerContext(roomContext, roomContext.getRoomTemp(), (config.get("FreezerH" +
-                "igh") + config.get("FreezerLow")) / 2, config.get("FreezerCompressorStartDiff"), config.get("FreezerCoolRate"), config.get("FreezerRateLossDoorOpen"), config.get("FreezerRateLossDoorClosed"));
+        freezer = new CoolerContext(
+        		roomContext,
+        		roomContext.getRoomTemp(),
+        		(config.get("FreezerHigh") + config.get("FreezerLow")) / 2,
+        		config.get("FreezerCompressorStartDiff"),
+        		config.get("FreezerCoolRate"),
+        		config.get("FreezerRateLossDoorOpen"),
+        		config.get("FreezerRateLossDoorClosed")
+        );
 
         // Listeners for room, fridge, and freezer temp changes
         roomContext.roomTempProperty().addListener((obs, oldValue, newValue) ->
