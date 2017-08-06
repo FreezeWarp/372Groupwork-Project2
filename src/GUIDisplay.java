@@ -24,9 +24,10 @@ import java.util.Map;
  *
  * Key Design Notes:
  ** We are using JavaFX's listeners (using Properties) instead of custom listener classes. This is probably a good idea, because those methods exist for a reason and are becoming the default choice for GUIs in the Java world. They work much like the Observer pattern.
- ** CoolingStrategy and CoolerState both are observable, and fire events that the other expects to see. However, because CoolingStrategy could change (though doesn't in this implementation) and CoolingState does change, it is easier to use CoolerContext as a go-between facade for them. Thus, CoolerContext listens to events from both the current CoolingStrategy and current CoolingState, and forwards those events to CoolingStrategy and CoolingState.
  *
  * @author Eric Fulwiler, Daniel Johnson, Joseph T. Parsons, Cory Stadther
+ * @version 2.0
+ * @since   2017-August-05
  */
 public class GUIDisplay extends Application {
     /*################################
@@ -396,7 +397,7 @@ public class GUIDisplay extends Application {
         coolerSet.put("Fridge", fridge);
 
         for (Map.Entry<String, CoolerContext> entry : coolerSet.entrySet()) {
-            // Fires when the cooler's temperature changes.
+            // Observes cooler temperature changes.
             entry.getValue().coolerTempProperty().addListener((obs, oldValue, newValue) ->
                 Platform.runLater(() -> {
                     labels.get("l" + entry.getKey() + "TempStatus").setText(entry.getKey() + " temperature: " + newValue.intValue());
@@ -404,7 +405,7 @@ public class GUIDisplay extends Application {
                 })
             );
 
-            // Fires when the cooler changes between DoorOpened and DoorClosed states.
+            // Observer cooler state changes.
             entry.getValue().currentStateProperty().addListener((obs, oldValue, newValue) ->
                 Platform.runLater(() -> {
                     // Update the button text based on the current state.
@@ -413,9 +414,6 @@ public class GUIDisplay extends Application {
                     }
                     else if (newValue.getClass().getName().equals("CoolerDoorClosedIdleState") || newValue.getClass().getName().equals("CoolerDoorClosedActiveState")) {
                         buttons.get("b" + entry.getKey() + "DoorToggle").setText("Open " + entry.getKey().toLowerCase() + " door");
-                    }
-                    else {
-                        alert("Unknown cooler state.");
                     }
 
                     // Update the cooling status indicator.

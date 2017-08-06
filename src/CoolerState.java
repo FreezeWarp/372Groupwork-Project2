@@ -2,6 +2,10 @@ import java.util.Observable;
 
 /**
  * A state the cooler can be in.
+ *
+ * @author  Eric Fulwiler, Daniel Johnson, Joseph T. Parsons, Cory Stadther
+ * @version 2.0
+ * @since   2017-August-05
  */
 public abstract class CoolerState extends Observable {
     /**

@@ -1,5 +1,9 @@
 /**
  * A state for a Cooler when its door is open.
+ *
+ * @author  Eric Fulwiler, Daniel Johnson, Joseph T. Parsons, Cory Stadther
+ * @version 2.0
+ * @since   2017-August-05
  */
 public class CoolerDoorOpenedState extends CoolerState {
     /**

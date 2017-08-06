@@ -1,6 +1,10 @@
 /**
  * A basic (and not necessarily physics-accurate) cooling strategy that adjusts the cooler strategy and sends events to turn the compressor on or off.
  * A much simpler real-world CoolingStrategy would be one that simply observes a thermometer every so often.
+ *
+ * @author  Eric Fulwiler, Daniel Johnson, Joseph T. Parsons, Cory Stadther
+ * @version 2.0
+ * @since   2017-August-05
  */
 public class DefaultCoolingStrategy extends ObservableCoolingStrategy {
     /**

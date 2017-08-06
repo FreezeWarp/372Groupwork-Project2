@@ -3,6 +3,10 @@ import java.util.Map;
 
 /**
  * A map that stores named (or otherwise identified) parameters, and prevents new entries from being added after initialisation.
+ *
+ * @author  Eric Fulwiler, Daniel Johnson, Joseph T. Parsons, Cory Stadther
+ * @version 2.0
+ * @since   2017-August-05
  */
 public class StrongMap<K, V> {
     /**

@@ -4,7 +4,12 @@ import java.util.Observable;
 import java.util.Observer;
 
 /**
- * Created by joseph on 23/07/17.
+ * The cooler context, which models a cooler's temperature, cooling strategy, various states, loss properties, and so-on.
+ * Note that CoolingStrategy and CoolerState both are observable, and fire events that the other expects to see. However, because CoolingStrategy could change (though doesn't in this implementation) and CoolingState does change, it is easier to use CoolerContext as a go-between facade for them. Thus, CoolerContext listens to events from both the current CoolingStrategy and current CoolingState, and forwards those events to CoolingStrategy and CoolingState.
+ *
+ * @author Eric Fulwiler, Daniel Johnson, Joseph T. Parsons, Cory Stadther
+ * @version 2.0
+ * @since   2017-August-05
  */
 public class CoolerContext implements Observer {
     /**
