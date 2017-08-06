@@ -4,18 +4,6 @@
  */
 public class DefaultCoolingStrategy extends ObservableCoolingStrategy {
     /**
-     * How long the cooler has been cooling (how long the compressor has been active) since the last change in the cooler's temperature.
-     * This is reset once the cooler temperature drops, which happens once the this number reaches the cooling rate.
-     */
-    protected int coolTime = 0;
-
-    /**
-     * How long the cooler has been running (on or off) since the last temperature change.
-     * This is reset once the cooler temperature increases, which happens once this number reaches the loss rate.
-     */
-    protected int lossTime = 0;
-
-    /**
      * Whether or not we are currently cooling.
      */
     private boolean isCooling = false;

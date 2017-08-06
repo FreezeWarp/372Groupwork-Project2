@@ -8,7 +8,7 @@ public class StrongMap<K, V> {
     /**
      * The map storing our StrongMap.
      */
-    Map<K, V> map = new HashMap();
+    private Map<K, V> map = new HashMap();
 
 
     /**

@@ -3,30 +3,28 @@ skinparam classAttributeIconSize 0
 hide empty members
 
 abstract class CoolerState [[java:CoolerState]] {
-	#boolean lightOn
-	+{abstract}void run()
-	+{abstract}int getCoolerLossRate()
-	+{abstract}boolean isLightOn()
-	+{abstract}void handle(Object arg)
+	+{abstract}run()
+	+{abstract}isLightOn(): boolean
+	+{abstract}isCooling(): boolean
+	+{abstract}getCoolerLossRate(): int
+	+{abstract}handle(Object arg)
 }
 
 class CoolerContext [[java:CoolerContext]] {
 }
 
-CoolerState --> "1" CoolerContext : coolerContext
-class Observable [[java:java.util.Observable]] {
+interface Observable [[java:java.lang.Observable]] {
 }
+
+CoolerState --> "1" CoolerContext : coolerContext
 
 Observable <|-- CoolerState
 class Timer [[java:Timer]] {
-	-Thread thread
-	-{static}Timer instance
+	-thread: Thread
+	-{static}instance: Timer
 	-Timer()
-	+{static}Timer instance()
+	+{static}instance(): Timer
 	+void run()
-}
-
-class Observable [[java:java.util.Observable]] {
 }
 
 Observable <|-- Timer
@@ -37,18 +35,13 @@ Runnable <|.. Timer
 abstract class ObservableCoolingStrategy [[java:ObservableCoolingStrategy]] {
 }
 
-class Observable [[java:java.util.Observable]] {
-}
-
 Observable <|-- ObservableCoolingStrategy
 interface CoolingStrategy [[java:CoolingStrategy]] {
 }
 
 CoolingStrategy <|.. ObservableCoolingStrategy
 class CoolerDoorClosedIdleState [[java:CoolerDoorClosedIdleState]] {
-	+CoolerDoorClosedIdleState(CoolerContext coolerContext)
-	+void handle(Object arg)
-	+void run()
+	+CoolerDoorClosedIdleState(coolerContext: CoolerContext)
 }
 
 class CoolerDoorClosedState [[java:CoolerDoorClosedState]] {
@@ -56,26 +49,21 @@ class CoolerDoorClosedState [[java:CoolerDoorClosedState]] {
 
 CoolerDoorClosedState <|-- CoolerDoorClosedIdleState
 class NoKeyException [[java:NoKeyException]] {
-	+NoKeyException(Object key)
+	+NoKeyException(key: Object)
 }
 
 class RuntimeException [[java:java.lang.RuntimeException]] {
 }
 
 RuntimeException <|-- NoKeyException
-class ConfigurationMap [[java:ConfigurationMap]] {
-	~Map<K,V> map
-	+ConfigurationMap(K[] defaultKeys, V[] defaultValues)
-	+V get(K key)
-	+void put(K key, V value)
+class StrongMap [[java:StrongMap]] {
+	-map: Map<K,V>
+	+StrongMap(defaultKeys: K[], defaultValues: V[])
+	+get(key: K): V
+	+put(key: K, value: V)
 }
 
 class CoolerDoorClosedState [[java:CoolerDoorClosedState]] {
-	#boolean lightOn
-	+int getCoolerLossRate()
-	+void handle(Object arg)
-	+boolean isLightOn()
-	+void run()
 }
 
 class CoolerState [[java:CoolerState]] {
@@ -83,17 +71,17 @@ class CoolerState [[java:CoolerState]] {
 
 CoolerState <|-- CoolerDoorClosedState
 class GUIDisplay [[java:GUIDisplay]] {
-	~{static}RoomContext roomContext
-	~{static}CoolerContext fridge
-	~{static}CoolerContext freezer
-	~{static}ConfigurationMap<String,Integer> config
-	-{static}ConfigurationMap<String,Label> labels
-	-{static}ConfigurationMap<String,Button> buttons
-	-{static}ConfigurationMap<String,TextField> textfields
-	+{static}void main(String[] args)
-	+void start(Stage primaryStage)
-	+{static}void alert(String text)
-	+{static}void startSimulation()
+	~{static}roomContext: RoomContext
+	~{static}fridge: CoolerContext
+	~{static}freezer: CoolerContext
+	~{static}config: StrongMap<String,Integer>
+	-{static}labels: StrongMap<String,Label>
+	-{static}buttons: StrongMap<String,Button>
+	-{static}textfields: StrongMap<String,TextField>
+	+{static}main(args: String[])
+	+start(primaryStage: Stage)
+	+{static}alert(text: String)
+	+{static}startSimulation()
 }
 
 class Application [[java:com.sun.glass.ui.Application]] {
@@ -101,38 +89,38 @@ class Application [[java:com.sun.glass.ui.Application]] {
 
 Application <|-- GUIDisplay
 class CoolerContext [[java:CoolerContext]] {
-	-ObjectProperty<CoolerState> currentState
-	-DoubleProperty coolerTemp
-	-int compressorStartDiff
-	-int desiredCoolerTemp
-	-int coolerLossRateOpen
-	-int coolerLossRateClose
-	-int coolerCoolRate
-	+CoolerContext(RoomContext roomContext)
-	+CoolerContext(RoomContext roomContext, int initialTemp, int targetTemp, int compressorStartDiff, int coolRate, int lossRateOpen, int lossRateClosed)
-	+void update(Observable observable, Object arg)
-	+void processEvent(Object event)
-	+void changeCurrentState(CoolerState nextState)
-	+double getCoolerTemp()
-	+void setCoolerTemp(double temp)
-	+DoubleProperty coolerTempProperty()
-	+int getDesiredCoolerTemp()
-	+void setDesiredCoolerTemp(int temp)
-	+int getCoolerLossRateOpen()
-	+void setCoolerLossRateOpen(int rate)
-	+int getCoolerLossRateClose()
-	+void setCoolerLossRateClose(int rate)
-	+int getCoolerCoolRate()
-	+void setCoolerCoolRate(int rate)
-	+int getCompressorStartDiff()
-	+void setCompressorStartDiff(int compressorStartDiff)
-	+RoomContext getRoomContext()
-	+ObservableCoolingStrategy getCoolingStrategy()
-	+CoolerState getCurrentState()
-	+ObjectProperty<CoolerState> currentStateProperty()
-	+CoolerDoorClosedIdleState getDoorClosedIdleState()
-	+CoolerDoorClosedActiveState getDoorClosedActiveState()
-	+CoolerDoorOpenedState getDoorOpenedState()
+	-currentState: ObjectProperty<CoolerState>
+	-coolerTemp: DoubleProperty
+	-compressorStartDiff: int
+	-desiredCoolerTemp: int
+	-coolerLossRateOpen: int
+	-coolerLossRateClose: int
+	-coolerCoolRate: int
+	+CoolerContext(roomContext: RoomContext)
+	+CoolerContext(roomContext: RoomContext, initialTemp: int, targetTemp: int, compressorStartDiff: int, coolRate: int, lossRateOpen: int, lossRateClosed: int)
+	+update(observable: Observable, arg: Object)
+	+processEvent(event: Object)
+	+changeCurrentState(nextState: CoolerState)
+	+getCoolerTemp(): double
+	+setCoolerTemp(temp: double)
+	+coolerTempProperty(): DoubleProperty
+	+getDesiredCoolerTemp(): int
+	+setDesiredCoolerTemp(temp: int)
+	+getCoolerLossRateOpen(): int
+	+setCoolerLossRateOpen(rate: int)
+	+getCoolerLossRateClose()
+	+setCoolerLossRateClose(rate: int)
+	+getCoolerCoolRate()
+	+setCoolerCoolRate(rate: int)
+	+getCompressorStartDiff()
+	+setCompressorStartDiff(compressorStartDiff: int)
+	+getRoomContext(): RoomContext
+	+getCoolingStrategy(): ObservableCoolingStrategy
+	+getCurrentState(): CoolerState
+	+currentStateProperty(): ObjectProperty<CoolerState>
+	+getDoorClosedIdleState(): CoolerDoorClosedIdleState
+	+getDoorClosedActiveState(): CoolerDoorClosedActiveState
+	+getDoorOpenedState(): CoolerDoorOpenedState
 }
 
 class RoomContext [[java:RoomContext]] {
@@ -160,18 +148,11 @@ interface Observer [[java:java.util.Observer]] {
 
 Observer <|.. CoolerContext
 interface CoolingStrategy [[java:CoolingStrategy]] {
-	void processTimerTick()
-	void startCooling()
-	void stopCooling()
-	boolean isCooling()
-	BooleanProperty isCoolingProperty()
 	void handle(Object arg)
 }
 
 class CoolerDoorClosedActiveState [[java:CoolerDoorClosedActiveState]] {
-	+CoolerDoorClosedActiveState(CoolerContext coolerContext)
-	+void handle(Object arg)
-	+void run()
+	+CoolerDoorClosedActiveState(coolerContext: CoolerContext)
 }
 
 class CoolerDoorClosedState [[java:CoolerDoorClosedState]] {
@@ -179,19 +160,15 @@ class CoolerDoorClosedState [[java:CoolerDoorClosedState]] {
 
 CoolerDoorClosedState <|-- CoolerDoorClosedActiveState
 class RoomContext [[java:RoomContext]] {
-	-IntegerProperty roomTemp
-	+RoomContext(int roomTemp)
-	+int getRoomTemp()
-	+void setRoomTemp(int temp)
-	+IntegerProperty roomTempProperty()
+	-roomTemp: IntegerProperty
+	+RoomContext(roomTemp: int)
+	+getRoomTemp(): int
+	+setRoomTemp(temp: int)
+	+roomTempProperty(): IntegerProperty
 }
 
 class CoolerDoorOpenedState [[java:CoolerDoorOpenedState]] {
 	+CoolerDoorOpenedState(CoolerContext coolerContext)
-	+int getCoolerLossRate()
-	+void handle(Object arg)
-	+boolean isLightOn()
-	+void run()
 }
 
 class CoolerState [[java:CoolerState]] {
@@ -199,19 +176,13 @@ class CoolerState [[java:CoolerState]] {
 
 CoolerState <|-- CoolerDoorOpenedState
 class DefaultCoolingStrategy [[java:DefaultCoolingStrategy]] {
-	#int coolTime
-	#int lossTime
-	-BooleanProperty isCooling
+	-isCooling: boolean
 	+DefaultCoolingStrategy(CoolerContext coolerContext)
-	+void handle(Object arg)
-	+void processTimerTick()
-	+void startCooling()
-	+void stopCooling()
-	+boolean isCooling()
-	+BooleanProperty isCoolingProperty()
-}
-
-class CoolerContext [[java:CoolerContext]] {
+	+handle(Object arg)
+	+isCooling(): boolean
+	-processTimerTick()
+	-startCooling()
+	-stopCooling()
 }
 
 DefaultCoolingStrategy --> "1" CoolerContext : coolerContext
