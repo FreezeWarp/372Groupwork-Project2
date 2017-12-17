@@ -1,5 +1,5 @@
 # ICS-372 Group Project 2: A Refridgerator Simulation
-A basic graphical refridgeration simulation with event, strategy, and visitor patterns.
+A basic graphical refridgeration simulation with event, strategy, and visitor patterns. Uses JavaFX for frontend.
 
 ## Group Members
 * Eric Fulwiler
