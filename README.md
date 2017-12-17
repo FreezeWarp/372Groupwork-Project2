@@ -1,5 +1,5 @@
-# ICS-372 Group Project 1: A Movie Theater System
-A basic movie theater system in Java on the command line.
+# ICS-372 Group Project 2: A Refridgerator Simulation
+A basic graphical refridgeration simulation with event, strategy, and visitor patterns.
 
 ## Group Members
 * Eric Fulwiler
@@ -10,14 +10,7 @@ A basic movie theater system in Java on the command line.
 ## Nonfunctional Requirements
 * Java, using CLI
 
-## Current Use Cases
-* Saving/Loading Data
-* Add/Remove/List Clients
-* Add/Remove/List Shows
-* Add/Remove/List Customers
-* Add/Remove Customer Credit Cards
-
 ## Additional Artifacts
-* Use Case Tables
-* UML Class Diagram
+* State Diagram and Table
 * Sequence Diagrams
+* Class Diagram
